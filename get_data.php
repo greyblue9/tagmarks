@@ -3,7 +3,7 @@
 define('MAIN_DATA_FILENAME', 'data.json');
 define('SECURE_DATA_SCRIPT_FILENAME', 'secure_vars.php');
 
-require('common.inc.php');
+require('common.inc');
 
 // load datafile
 if (!file_exists(MAIN_DATA_FILENAME)) {

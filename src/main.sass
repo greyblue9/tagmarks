@@ -1,0 +1,110 @@
+
+
+@mixin verticalGradient($top_color, $bottom_color)
+  background-image: -moz-linear-gradient(bottom, $bottom_color 0%, $top_color 100%)
+  background-image: -webkit-linear-gradient(bottom, $bottom_color 0%, $top_color 100%)
+  background-image: linear-gradient(bottom, $bottom_color 0%, $top_color 100%)
+
+$leftWidth: 160px
+
+body
+  $gradientTopColor: #5a6ca2
+  $gradientBottomColor: #263665
+
+  background: verticalGradient($gradientTopColor, $gradientBottomColor)
+  position: relative
+
+  color: #fff
+  margin: 0
+  padding: 0
+  font-size: 14px
+  font-family: sans-serif
+
+
+.fatal_error 
+  margin: 10px
+  padding: 10px
+  border: 2px solid #fd778e
+  background: #fec5ce
+  color: #000
+  font-size: 24px
+  font-weight: bold
+
+  .more_info 
+    font-family: Consolas, "Deja Vu Sans Mono", monospace
+    font-size: 16px
+    font-weight: normal
+  
+
+
+
+body > #left_bg 
+  position: fixed
+  /* width is calculated */
+  left: 0
+  top: 0
+  width: $leftWidth
+  height: 100%
+
+  background: #000
+  opacity: 0.3
+  overflow: hidden
+
+  z-index: 0
+
+
+body > #left 
+  position: fixed
+  /* width is calculated */
+  left: 0
+  top: 0
+  width: 140px
+  height: 100%
+
+  overflow: hidden
+
+  z-index: 1
+
+
+body > #center 
+  position: absolute
+  /* left, width are calculated */
+  margin-left: 140px
+  left: 0
+  top: 0
+  width: 100%
+
+  overflow: auto
+
+
+
+#left .tag 
+  /* deselected tag */
+  margin: 5px 10px
+  font-size: 18px
+  color: #000
+  /* background must come from JS, lowered luminance */
+  border: 2px solid rgba(0, 0, 0, 0.40)
+  padding: 3px 5px
+  font-weight: bold
+  cursor: pointer
+
+
+#left .tag.selected 
+  /* background luminance normal */
+  border: 2px solid rgba(255, 255, 255, 0.75)
+
+  background-image: url("images/tag_check_mark_faint.png")
+  background-origin: content-box
+  background-position: right center
+  background-repeat: no-repeat
+
+
+#left .tag:hover 
+  box-shadow: 0 0 3px #fff
+
+
+#left .tag.selected:hover 
+  box-shadow: 0 0 8px #fff
+
+

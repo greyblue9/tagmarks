@@ -1,6 +1,9 @@
 
 // @author greyblue9
 
+var $; // This is just to disable some warnings in IntelliJ so it doesn't think
+       // $ is an "unresolved" global symbol.
+
 $(document).ready(function() {
 
 	TagMarks.init();
@@ -39,7 +42,7 @@ var TagMarks = {
 			var $tag = $('<div class="tag">'+tag.name+'</div>');
 			$tag.addClass('selected');
             $tag.attr('sel_color', tag.background_color);
-            $tag.css('background', tag.background_color);
+            $tag.css('background-color', tag.background_color);
 
             var color_rgb_str = $tag.css('background-color');
             var color_rgb = TagMarks.Utils.css_color_string_to_rgb(color_rgb_str); // [r, g, b]
@@ -53,9 +56,9 @@ var TagMarks = {
             $tag.on('click', function() {
                 $tag.toggleClass('selected');
                 if ($tag.hasClass('selected')) {
-                    $tag.css('background', color_rgb_str);
+                    $tag.css('background-color', color_rgb_str);
                 } else {
-                    $tag.css('background', dark_color_str);
+                    $tag.css('background-color', dark_color_str);
                 }
             });
 

@@ -1,6 +1,6 @@
 <?php
 
-require('common.inc.php');
+require('common.inc');
 
 
 ?><!DOCTYPE html>
@@ -8,7 +8,7 @@ require('common.inc.php');
 <head>
 	<title>TagMarks</title>
 	<link rel="shortcut icon" href="favicon.ico" />
-	<link rel="stylesheet" href="main.css" />
+	<link rel="stylesheet" href="src/main.css" />
 </head>
 
 <body>
@@ -25,6 +25,6 @@ require('common.inc.php');
 	</div>
 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script type="text/javascript" src="main.js"></script>
+	<script type="text/javascript" src="src/main.js"></script>
 </body>
 </html>
