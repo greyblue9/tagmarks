@@ -1,0 +1,49 @@
+body {
+	background: #000; /*#124a81;*/
+	color: #fff;
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+	text-align: center;
+	font-family: sans-serif;
+}
+
+.fatal_error {
+	margin: 10px;
+	padding: 10px;
+	border: 2px solid #fd778e;
+	background: #fec5ce;
+	color: #000;
+	font-size: 24px;
+	font-weight: bold;
+}
+
+.fatal_error > .more_info {
+	font-family: Consolas, "Deja Vu Sans Mono", monospace;
+	font-size: 16px;
+	font-weight: normal;
+}
+
+body > * {
+	text-align: left;
+}
+
+body > .non-scroll {
+	margin: 0 auto;
+	background: #155595;
+	width: 1080px;
+	height: 690px;
+}
+
+
+
+@media (max-width:500px) {
+
+	/* rules for mobile devices */
+
+	body {
+		padding: 2px;
+	}
+
+}
+
