@@ -1,10 +1,15 @@
 body {
-	background: #000; /*#124a81;*/
+	background: #5a6ca2;
+	background-image: -moz-linear-gradient(bottom, #263665 0%, #5a6ca2 100%);
+	background-image: -webkit-linear-gradient(bottom, #263665 0%, #5a6ca2 100%);
+	background-image: linear-gradient(bottom, #263665 0%, #5a6ca2 100%);
+
+	position: relative;
+
 	color: #fff;
 	margin: 0;
 	padding: 0;
 	font-size: 14px;
-	text-align: center;
 	font-family: sans-serif;
 }
 
@@ -24,16 +29,63 @@ body {
 	font-weight: normal;
 }
 
-body > * {
-	text-align: left;
+body > #left_bg {
+	position: fixed;
+	/* width is calculated */
+	left: 0;
+	top: 0;
+	width: 140px;
+	height: 100%;
+
+	background: #000;
+	opacity: 0.3;
+	overflow: hidden;
+
+	z-index: 0;
 }
 
-body > .non-scroll {
-	margin: 0 auto;
-	background: #155595;
-	width: 1080px;
-	height: 690px;
+body > #left {
+	position: fixed;
+	/* width is calculated */
+	left: 0;
+	top: 0;
+	width: 140px;
+	height: 100%;
+
+	overflow: hidden;
+
+	z-index: 1;
 }
+
+body > #center {
+	position: absolute;
+	/* left, width are calculated */
+	margin-left: 140px;
+	left: 0;
+	top: 0;
+	width: 100%;
+
+	overflow: auto;
+}
+
+
+#left .tag {
+	/* deselected tag */
+	margin: 5px 10px;
+	font-size: 18px;
+	color: #000;
+	/* background must come from JS */
+	border: 2px solid rgba(0, 0, 0, 0.40);
+	padding: 3px 5px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+#left .tag.selected {
+	/* background luminance increases */
+	border: 2px solid rgba(255, 255, 255, 0.75);
+}
+
 
 
 
@@ -42,7 +94,7 @@ body > .non-scroll {
 	/* rules for mobile devices */
 
 	body {
-		padding: 2px;
+
 	}
 
 }

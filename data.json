@@ -3,39 +3,47 @@
         {
             "name": "Essential",
             "description": "Favorite or most frequently visited sites",
-            "priority": 10
+            "priority": 10,
+            "background_color": "#f76c3e"
         },
         {
             "name": "Media",
             "description": "Music and video sites",
-            "priority": 100
+            "priority": 100,
+            "background_color": "#99f971"
         },
         {
             "name": "Print",
             "description": "Sites that contain print media such as online newspapers",
-            "priority": 100
+            "priority": 100,
+            "background_color": "#dfd9e6"
         },
         {
             "name": "Social",
             "description": "Sites whose primary function is interacting with others",
-            "priority": 20
+            "priority": 20,
+            "background_color": "#a3b6f8"
         },
         {
             "name": "Tools",
-            "description": "Sites that can be used to accomplish a task"
+            "description": "Sites that can be used to accomplish a task",
+            "background_color": "#d5aa80"
         },
         {
             "name": "Paid",
-            "description": "Sites containing services that are actively paid for or billed"
+            "description": "Sites containing services that are actively paid for or billed",
+            "background_color": "#e1f3de"
         },
         {
             "name": "Creativity",
-            "description": "Sites whose primary function is producing or editing creative works"
+            "description": "Sites whose primary function is producing or editing creative works",
+            "background_color": "#b9a3f3"
         },
         {
             "name": "Daily",
             "description": "Sites that should be checked daily or often such as email, calendars, or to-do lists.",
-            "priority": 0
+            "priority": 0,
+            "background_color": "#f7ff8a"
         }
     ],
 
