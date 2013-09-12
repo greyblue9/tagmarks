@@ -1,0 +1,15 @@
+{
+    "items": [
+		{
+			"name": "Gmail",
+			"thumbnail": "Gmail.png",
+			"url": "https://mail.google.com/mail/u/0/?shva=1#inbox"
+		},
+		{
+			"name": "Google Calendar",
+			"thumbnail": "GoogleCalendar.png",
+			"url": "https://www.google.com/calendar/render"
+		}
+	]
+}
+

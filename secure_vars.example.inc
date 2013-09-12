@@ -4,7 +4,8 @@
 //
 // Add your secure settings and setting pieces (such as part of a path)
 // into the below array returned from get_secure_vars(), and they will
-// become available to data.json
+// become available to data.json. If you run a hosted environment, be sure
+// to place this file OUTSIDE of your web root just for added security!
 //
 // Usage within data.json is very simple, as you will see in these
 // example JSON snippets:

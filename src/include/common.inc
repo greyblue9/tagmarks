@@ -213,3 +213,13 @@ function replace_secure_vars(&$p_data, $secure_vars) {
 }
 
 
+function get_web_response($url) {
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+	$data = curl_exec($ch);
+	curl_close($ch);
+	return $data;
+}
+

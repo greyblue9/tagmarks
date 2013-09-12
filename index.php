@@ -1,6 +1,6 @@
 <?php
 
-require('common.inc');
+require_once('src/include/common.inc');
 
 
 ?><!DOCTYPE html>

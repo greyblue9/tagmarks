@@ -29,7 +29,7 @@ body > #left_bg {
   height: 100%;
   background: black;
   opacity: 0.3;
-  overflow: hidden;
+  overflow: none;
   z-index: 0; }
 
 body > #left {

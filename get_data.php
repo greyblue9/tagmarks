@@ -1,16 +1,21 @@
 <?php
 
-define('MAIN_DATA_FILENAME', 'data.json');
-define('SECURE_DATA_SCRIPT_FILENAME', 'secure_vars.php');
+$inidata = parse_ini_file('tagmarks.ini');
 
-require('common.inc');
+define('MAIN_DATA_FILEPATH', $inidata['main_data_relative_path'].'/'.$inidata['main_data_filename']);
+define('MAIN_DATA_FILENAME', $inidata['main_data_filename']);
+define('SECURE_DATA_SCRIPT_FILEPATH', $inidata['secure_vars_filename']);
+define('SECURE_DATA_SCRIPT_FILENAME', $inidata['secure_vars_relative_path'].'/'.$inidata['secure_vars_filename']);
+
+require('src/include/common.inc');
+
 
 // load datafile
-if (!file_exists(MAIN_DATA_FILENAME)) {
-	exit_with_fatal_error("Expecting '${MAIN_DATA_FILENAME}' in script directory.");
+if (!file_exists(MAIN_DATA_FILEPATH)) {
+	exit_with_fatal_error("Expecting '${MAIN_DATA_FILEPATH}' relative to script directory.");
 }
 
-$main_data_file_contents = file_get_contents(MAIN_DATA_FILENAME);
+$main_data_file_contents = file_get_contents(MAIN_DATA_FILEPATH);
 $main_data = decode_json_with_error_output($main_data_file_contents);
 
 // sort the tags by priority
@@ -44,7 +49,7 @@ if (isset($_GET['raw']) && $_GET['raw'] == 1) {
 exit();
 
 
-$secure_vars = load_secure_vars(SECURE_DATA_SCRIPT_FILENAME);
+$secure_vars = load_secure_vars(SECURE_DATA_SCRIPT_FILEPATH);
 // The variable $data_with_secvars will contain any secure data in plaintext
 $data_with_secvars = get_copy_of($main_data);
 replace_secure_vars($data_with_secvars, $secure_vars);
