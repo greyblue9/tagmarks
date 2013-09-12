@@ -288,7 +288,7 @@
        y="605.11078"
        x="154.02692"
        id="image3834"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Gmail.png"
+       xlink:href="../thumbsets/default/Gmail.png"
        height="111.75138"
        width="199.15471"
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none" />
@@ -296,7 +296,7 @@
        y="605.11078"
        x="579.18146"
        id="image3856"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/GoogleCalendar.png"
+       xlink:href="../thumbsets/default/GoogleCalendar.png"
        height="111.75138"
        width="199.15471"
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none" />
@@ -320,7 +320,7 @@
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
        width="199.15471"
        height="111.75138"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Facebook.png"
+       xlink:href="../thumbsets/default/Facebook.png"
        id="image3869"
        x="793.02692"
        y="604.07513" />
@@ -328,7 +328,7 @@
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
        width="199.15471"
        height="111.75138"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Amazon.png"
+       xlink:href="../thumbsets/default/Amazon.png"
        id="image3873"
        x="367.18146"
        y="606.07513" />

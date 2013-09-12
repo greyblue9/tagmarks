@@ -373,7 +373,7 @@
        y="609.11078"
        x="154.02692"
        id="image3834"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Gmail.png"
+       xlink:href="../thumbsets/default/Gmail.png"
        height="111.75138"
        width="199.15471"
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none" />
@@ -381,7 +381,7 @@
        y="607.86218"
        x="365.04349"
        id="image3845"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/GNotes.png"
+       xlink:href="../thumbsets/default/GNotes.png"
        height="111.75138"
        width="199.15471"
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none" />
@@ -389,14 +389,14 @@
        y="609.11078"
        x="579.18146"
        id="image3856"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/GoogleCalendar.png"
+       xlink:href="../thumbsets/default/GoogleCalendar.png"
        height="111.75138"
        width="199.15471"
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none" />
     <image
        width="199.15471"
        height="111.75138"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/SugarSync.png"
+       xlink:href="../thumbsets/default/SugarSync.png"
        id="image3859"
        x="791.04333"
        y="607.86218"
@@ -437,7 +437,7 @@
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
        width="199.15471"
        height="111.75138"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Amazon.png"
+       xlink:href="../thumbsets/default/Amazon.png"
        id="image3869"
        x="154.02692"
        y="743.07513" />
@@ -445,7 +445,7 @@
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
        width="199.15471"
        height="111.75138"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Giant.png"
+       xlink:href="../thumbsets/default/Giant.png"
        id="image3871"
        x="365.04349"
        y="741.82654" />
@@ -453,7 +453,7 @@
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
        width="199.15471"
        height="111.75138"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/GoogleTasks.png"
+       xlink:href="../thumbsets/default/GoogleTasks.png"
        id="image3873"
        x="579.18146"
        y="743.07513" />
@@ -462,7 +462,7 @@
        y="741.82654"
        x="791.04333"
        id="image3875"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Spokeo.png"
+       xlink:href="../thumbsets/default/Spokeo.png"
        height="111.75138"
        width="199.15471" />
     <rect
@@ -508,7 +508,7 @@
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
        width="199.15471"
        height="111.75138"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Ebay.png"
+       xlink:href="../thumbsets/default/Ebay.png"
        id="image4245"
        x="154.02692"
        y="877.11078" />
@@ -516,7 +516,7 @@
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
        width="199.15471"
        height="111.75138"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Assembla.png"
+       xlink:href="../thumbsets/default/Assembla.png"
        id="image4247"
        x="365.04349"
        y="875.86218" />
@@ -524,7 +524,7 @@
        style="stroke:#000000;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
        width="199.15471"
        height="111.75138"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/GoogleCalendar.png"
+       xlink:href="../thumbsets/default/GoogleCalendar.png"
        id="image4249"
        x="579.18146"
        y="877.11078" />
@@ -533,7 +533,7 @@
        y="875.86218"
        x="791.04333"
        id="image4251"
-       xlink:href="file:///C:/VS/speed-reader/advanced_dials/thumbs/Bitbucket.png"
+       xlink:href="../thumbsets/default/Bitbucket.png"
        height="111.75138"
        width="199.15471" />
     <rect

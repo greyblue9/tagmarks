@@ -1,0 +1,3 @@
+These SVGs were created in Inkscape and that is the only viewer they have been tested with.
+
+The SVGs use linked images for the thumbnails instead of embedding all of the image data in every mockup, and it expects that the thumbnails (from the default thumbnail-set) can be found, relative to the mockups themselves, in the folder "../thumbsets/default". Meaning, one directory above "mockups", you would have the "thumbsets" directory, which has the subdirectory "default" which includes the default thumbnail image set.
