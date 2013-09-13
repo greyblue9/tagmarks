@@ -1,6 +1,8 @@
 <?php
 
-$inidata = parse_ini_file('tagmarks.ini');
+// _main.ini is the one you use to put in your gitignore
+$inifile = file_exists('_main.ini')? '_main.ini': 'main.ini';
+$inidata = parse_ini_file($inifile);
 
 define('MAIN_DATA_FILEPATH', $inidata['main_data_relative_path'].'/'.$inidata['main_data_filename']);
 define('MAIN_DATA_FILENAME', $inidata['main_data_filename']);

@@ -23,7 +23,7 @@ require_once('../src/include/common.inc');
 
 define('PATH_TO_THUMBSETS', __DIR__);
 
-define('URL_SEARCH_QUERY_LIMIT', 10);
+define('URL_SEARCH_QUERY_LIMIT', 0);
 define('GOOGLE_CUSTSEARCH_KEY', 'AIzaSyCTHyk3LC9RKsruLGr-T1p7obuHnKfNOJs');
 define('GOOGLE_CUSTSEARCH_CTX', '016630067908230657427:ovcwn0xtatk');
 set_time_limit(0);
@@ -110,8 +110,8 @@ if (!isset($_POST['thumbset'])) {
 	$out_filepath = "$path/$set_name/thumbset.generated-".time().".json";
 	file_put_contents($out_filepath, $output);
 
-	print("Your generated thumbset JSON file can be found at:<br/><br/>");
-	print("<b>$out_filepath</b>");
+	print('<div>Your generated thumbset JSON file can be found at:</div>');
+	print('<input type="text" value="'.$out_filepath.'" class="long" />');
 	exit();
 
 }

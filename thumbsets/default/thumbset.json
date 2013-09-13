@@ -1,13 +1,17 @@
 {
     "items": [
 		{
-			"name": "Gmail",
 			"thumbnail": "Gmail.png",
+			"site_name": "Gmail Inbox",
+			"width": 319,
+			"height": 179,
 			"url": "https://mail.google.com/mail/u/0/?shva=1#inbox"
 		},
 		{
-			"name": "Google Calendar",
 			"thumbnail": "GoogleCalendar.png",
+			"name": "Google Calendar",
+			"width": 319,
+			"height": 179,
 			"url": "https://www.google.com/calendar/render"
 		}
 	]
