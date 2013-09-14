@@ -19,7 +19,7 @@
 // script (it was mostly written for my own benefit).
 
 
-require_once('../src/include/common.inc');
+require_once('../src/include/common.inc.php');
 
 define('PATH_TO_THUMBSETS', __DIR__);
 

@@ -11,11 +11,12 @@
 // example JSON snippets:
 //
 //      "password": "$secure{xyz_password}
-//
 //      "backup_path": "$secure{my_private_path}/automated/backups
 //
 // Summary of the above: Use $secure{<varname>} in your JSON,
-//                        and define <varname> and its value here.
+// and define <varname> and its value here.
+
+
 
 function get_secure_vars() {
 
@@ -27,18 +28,3 @@ function get_secure_vars() {
 
 }
 
-
-// NOTE: TagMarks will check to make sure the get_secure_vars
-// function is present and expects it to return an associative array.
-// If an attempt is made to run this script directly, the following
-// will take place:
-
-if (basename($argv[0]) == basename(__FILE__)) {
-	
-	print(
-		"Dear user sitting at ${$_SERVER['REMOTE_HOST']}, \n\n".
-		"This script is not intended to be executed directly. \n\n".
-		"Sincerely, \n".
-		"-- A curious webserver on port ${$_SERVER['SERVER_PORT']}");
-	exit();
-}
