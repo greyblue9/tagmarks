@@ -1,14 +1,14 @@
 <?php
 
-require_once('includes/common.inc.php');
+require_once('include/common.inc.php');
 
 
 ?><!DOCTYPE html>
 <html>
 <head>
 	<title>TagMarks</title>
-	<link rel="shortcut icon" href="resources/images/favicon.ico" />
-	<link rel="stylesheet" href="resources/compiled/main.css" />
+	<link rel="shortcut icon" href="res/img/favicon.ico" />
+	<link rel="stylesheet" href="res/tagmarks.css" />
 </head>
 
 <body>
@@ -25,6 +25,6 @@ require_once('includes/common.inc.php');
 	</div>
 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script type="text/javascript" src="resources/main.js"></script>
+	<script type="text/javascript" src="res/tagmarks.js"></script>
 </body>
 </html>

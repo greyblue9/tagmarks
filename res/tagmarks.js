@@ -22,7 +22,7 @@ var TagMarks = {
 
 		var me = this;
 
-		$.get('get_data.php?raw=1', function(data) {
+		$.get('data_action.php?action=get', function(data) {
 			me.data = data;
 			me.tags = data.tags;
 			me.sites = data.sites;

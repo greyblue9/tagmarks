@@ -8,7 +8,7 @@ define('MAIN_DATA_FILENAME', $inidata['main_data_filename']);
 define('SECURE_DATA_SCRIPT_FILEPATH', $inidata['secure_vars_filename']);
 define('SECURE_DATA_SCRIPT_FILENAME', $inidata['secure_vars_relative_path'].'/'.$inidata['secure_vars_filename']);
 
-require('includes/common.inc.php');
+require('include/common.inc.php');
 
 
 // load datafile
@@ -33,16 +33,19 @@ function tag_sorter($a, $b) {
 }
 usort($main_data['tags'], 'tag_sorter'); // sorts tags by priority, then by name
 
-// output as JSON here if requested
-if (isset($_GET['raw']) && $_GET['raw'] == 1) {
-	// Used by Javascript to get the main data
-	header('Content-type: application/json');
-	print(json_encode($main_data));
-	exit();
+
+
+if (isset($_GET['action']) && $_GET['action'] = 'get_data') {
+
+	// output as JSON here if requested
+	if (isset($_GET['raw']) && $_GET['raw'] == 1) {
+		// Used by Javascript to get the main data
+		header('Content-type: application/json');
+		print(json_encode($main_data));
+		exit();
+	}
+
 }
-
-
-
 
 
 
