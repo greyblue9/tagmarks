@@ -1,6 +1,6 @@
 
 body {
-	background: blue;
+	background: -moz-linear-gradient(center top, #555566 0%, #000000 100%) repeat fixed 0 0 rgba(0, 0, 0, 0);
 
 
 	position: relative;
@@ -31,7 +31,7 @@ body > #left_bg {
 	/* width is calculated */
 	left: 0;
 	top: 0;
-	width: 160px;
+	width: 190px;
 	height: 100%;
 	background: black;
 	opacity: 0.3;
@@ -51,13 +51,9 @@ body > #left {
 }
 
 body > #center {
-	position: absolute;
-	/* left, width are calculated */
-	margin-left: 140px;
-	left: 0;
-	top: 0;
-	width: 100%;
+	margin-left: 190px;
 	overflow: auto;
+	line-height: 0;
 }
 
 #left .tag {
@@ -86,4 +82,32 @@ body > #center {
 
 #left .tag.selected:hover {
 	box-shadow: 0 0 8px white;
+}
+
+a.thumbnail_link {
+	border: 2px solid #000;
+	display: inline-block;
+	position: relative;
+	text-decoration: none;
+	transition: border-color .75s ease, transform .4s ease-out, opacity .4s ease-out;
+	transform: scale(0.8, 0.8);
+	opacity: 0;
+	z-index: 95;
+}
+
+a.thumbnail_link > img {
+	border: 0 none;
+	display: block;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+
+a.thumbnail_link:hover {
+	border: 2px solid #4087d7;
+	-moz-transition: border-color box-shadow .01s ease;
+	box-shadow: 0 0 25px #000000;
+	z-index: 100;
 }

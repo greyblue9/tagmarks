@@ -3,10 +3,14 @@
 // _main.ini is the one you use to put in your gitignore
 $inidata = parse_ini_file('main.ini');
 
-define('MAIN_DATA_FILEPATH', $inidata['main_data_relative_path'].'/'.$inidata['main_data_filename']);
-define('MAIN_DATA_FILENAME', $inidata['main_data_filename']);
-define('SECURE_DATA_SCRIPT_FILEPATH', $inidata['secure_vars_filename']);
-define('SECURE_DATA_SCRIPT_FILENAME', $inidata['secure_vars_relative_path'].'/'.$inidata['secure_vars_filename']);
+define('MAIN_DATA_FILEPATH',
+	$inidata['main_data_relative_path'].'/'.$inidata['main_data_filename']);
+define('MAIN_DATA_FILENAME',
+	$inidata['main_data_filename']);
+define('SECURE_DATA_SCRIPT_FILEPATH',
+	$inidata['secure_vars_filename']);
+define('SECURE_DATA_SCRIPT_FILENAME',
+	$inidata['secure_vars_relative_path'].'/'.$inidata['secure_vars_filename']);
 
 require('include/common.inc.php');
 
@@ -35,42 +39,20 @@ usort($main_data['tags'], 'tag_sorter'); // sorts tags by priority, then by name
 
 
 
-if (isset($_GET['action']) && $_GET['action'] = 'get_data') {
-
-	// output as JSON here if requested
-	if (isset($_GET['raw']) && $_GET['raw'] == 1) {
-		// Used by Javascript to get the main data
-		header('Content-type: application/json');
-		print(json_encode($main_data));
-		exit();
-	}
-
-}
-
-
-
-// stop temporarily before decoding secvars
-exit();
-
-
 $secure_vars = load_secure_vars(SECURE_DATA_SCRIPT_FILEPATH);
+
+
 // The variable $data_with_secvars will contain any secure data in plaintext
 $data_with_secvars = get_copy_of($main_data);
 replace_secure_vars($data_with_secvars, $secure_vars);
 
 // This is for debugging the JSON parsing and secure variable parsing/replacement
-if (isset($_GET['show_parsed_json'])) {
-	header('Content-type: application/json');
-	$data_to_output = $main_data;
-	if (isset($_GET['secvars']) && $_GET['secvars'] == "true") {
-		$data_to_output = $data_with_secvars;
-	}
-	print(get_indented_json_string(json_encode($data_to_output)));
-	exit;
+if (isset($_GET['format']) && $_GET['format'] == 'json' &&
+	isset($_GET['secvars_post_replace']) && $_GET['secvars_post_replace'] == 1)
+{
+	header('Content-Type: application/json');
+
+	print(get_indented_json_string(json_encode($data_with_secvars)));
+	exit();
 }
-
-// From now on, we are referring to the main data array with replaced secure variables.
-$data = $data_with_secvars;
-
-
 

@@ -12,6 +12,11 @@ require_once('include/common.inc.php');
 </head>
 
 <body>
+	<div id="center">
+
+		&nbsp;
+
+	</div>
 	<div id="left_bg">&nbsp;</div>
 	<div id="left">
 
@@ -20,9 +25,7 @@ require_once('include/common.inc.php');
 		<div id="tag_nav_area"></div>
 
 	</div>
-	<div id="center">
-		Center
-	</div>
+
 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script type="text/javascript" src="res/tagmarks.js"></script>

@@ -16,24 +16,79 @@ var TagMarks = {
 
 	tags: [],
 	sites: [],
-	settings: [],
+	settings: {},
+
+	Viewport: {
+		EntireWebArea: {width: null, height: null},
+		MinWebArea: {width: null, height: null},
+		WebArea: {width: null, height: null},
+
+		MinThumbnailArea: {width: null, height: null},
+
+		OuterMarginWidth: null, // set by CSS file
+
+		recalculate: function () {
+			var $body = $('body');
+			var $container = $('#center');
+
+			// All available area, including that available for scrollbars
+			$body.css('overflow', 'hidden');
+			this.EntireWebArea.width = $body.outerWidth(true); // incl. padding+border
+			this.EntireWebArea.height = $body.height(); // incl. padding+border
+
+			// Available area, inside scrollbars (when both present)
+			$body.css('overflow', 'scroll');
+			this.MinWebArea.width = $body.outerWidth(true); // incl. padding+border
+			this.MinWebArea.height = $body.height(); // incl. padding+border
+			this.MinThumbnailArea.width = $container.innerWidth();
+			this.MinThumbnailArea.height = $container.height();
+
+			// Set to auto for final use/rendering
+			$body.css('overflow', 'auto');
+			this.WebArea.width = $body.outerWidth(true); // incl. padding+border
+			this.WebArea.height = $body.height(); // incl. padding+border
+
+			var outerMarginTotal = $body.outerWidth(true) - $body.width();
+			this.OuterMarginWidth = Math.floor(outerMarginTotal / 2);
+		}
+	},
+
+	Thumbnails: {
+		SourceSize: {width: 319, height: 179}
+	},
+
 
 	init: function() {
 
 		var me = this;
 
-		$.get('data_action.php?action=get', function(data) {
+		var request = $.ajax({
+			url: 'data_action.php',
+			type: 'GET',
+			data: {format: 'json', secvars_post_replace: 1},
+			dataType: 'json'
+		});
+
+		request.done(function (data) {
 			me.data = data;
 			me.tags = data.tags;
 			me.sites = data.sites;
-			me.settings = data.settings;
+			me.settings = 'settings' in data? data.settings: {};
 
-			me.render_tag_nav();
+			me.renderTagNav();
+
+			me.renderDials();
+
+			me.onResize();
 		});
 
+
+		$(window).on('resize', this.onResize);
+
+		this.Viewport.recalculate();
 	},
 
-	render_tag_nav: function() {
+	renderTagNav: function() {
 
 		var $container = $('#tag_nav_area');
 		$container.html('');
@@ -43,9 +98,11 @@ var TagMarks = {
 			$tag.addClass('selected');
             $tag.attr('sel_color', tag.background_color);
             $tag.css('background-color', tag.background_color);
+			$tag.attr('tag', tag._name_alnum);
 
             var color_rgb_str = $tag.css('background-color');
             var color_rgb = TagMarks.Utils.css_color_string_to_rgb(color_rgb_str); // [r, g, b]
+
             // color_hsl is 3 values in range 0-1
             var color_hsl = TagMarks.Utils.rgbToHsl(color_rgb[0], color_rgb[1], color_rgb[2]);
             var dark_color_rgb = TagMarks.Utils.hslToRgb(color_hsl[0], color_hsl[1], color_hsl[2] *.53);
@@ -60,9 +117,125 @@ var TagMarks = {
                 } else {
                     $tag.css('background-color', dark_color_str);
                 }
+	            TagMarks.onSelectedTagsChanged();
             });
 
 			$container.append($tag);
+		});
+
+	},
+
+	onSelectedTagsChanged: function() {
+		var $tags = $('#tag_nav_area > .tag');
+
+		$tags.each(function() {
+			var $tag = $(this);
+			var tagId = $tag.attr('tag');
+			if ($tag.hasClass('selected')) {
+				$('a.thumbnail_link[tags~="'+tagId+'"]').show();
+			} else {
+				$('a.thumbnail_link[tags~="'+tagId+'"]').hide();
+			}
+		});
+	},
+
+	renderDials: function() {
+
+		var $container = $('#center');
+		$container.html('');
+
+		$.each(this.sites, function(siteIdx, site) {
+
+			var $a = $('<a />');
+			$a.attr('href', site.url);
+			$a.attr('title', site.name);
+			$a.addClass('thumbnail_link');
+			$a.attr('tags', site.tags.join(' '));
+
+			var $img = $('<img />');
+			$img.attr('src', site.thumbnail);
+			$img.attr('title', site.name);
+
+			$a.append($img);
+
+			$container.append($a);
+
+		});
+
+	},
+
+	onResize: function() {
+
+		var vport = TagMarks.Viewport;
+		vport.recalculate();
+
+		var thumbHorizSep = vport.OuterMarginWidth;
+		var $firstRenderedThumb = $('a.thumbnail_link:first');
+		var thumbBorderWidthTotal = $firstRenderedThumb.outerWidth(false)
+			- $firstRenderedThumb.innerWidth();
+
+		var THUMBS_PER_ROW = 5;
+
+		var thumbWidth =
+			Math.floor(
+				(
+					vport.MinThumbnailArea.width
+					- (thumbBorderWidthTotal*THUMBS_PER_ROW)
+					- (thumbHorizSep*(THUMBS_PER_ROW-1))
+					- (vport.OuterMarginWidth * 2)
+				)
+				/ THUMBS_PER_ROW
+			);
+
+		if (thumbWidth >= TagMarks.Thumbnails.SourceSize.width) {
+			thumbWidth = TagMarks.Thumbnails.SourceSize.width;
+		}
+
+		var thumbHeight = (
+			TagMarks.Thumbnails.SourceSize.height
+			/ TagMarks.Thumbnails.SourceSize.width
+		) * thumbWidth;
+
+		var $thumbnailLinks = $('a.thumbnail_link');
+
+		$thumbnailLinks.css({
+			width: thumbWidth + 'px',
+			height: thumbHeight + 'px',
+			margin: '0'
+		});
+
+		// TODO: Replace this logic w/ row divs or something simpler/better
+		// Remove left margin on first thumbnails in each row (one for every
+		// thumbs-per-row)
+		var idxGroupOffset = 0;
+		$thumbnailLinks.each(function (idx) {
+			var $a = $(this);
+
+			if ($a.prev('.group').length) {
+				idxGroupOffset = idx
+			}
+
+			idx -= idxGroupOffset;
+
+			if (idx % THUMBS_PER_ROW != 0) {
+				$a.css('margin-left', thumbHorizSep + 'px');
+			}
+		});
+
+
+		$thumbnailLinks.children('img').each(function () {
+
+			var $img = $(this);
+			var $a = $img.parent(); // a.thumbnail_link
+
+			$img.on('load', function () {
+				$a.css('transform', 'scale(1,1)');
+				$a.css('opacity', '1');
+			});
+
+			// Trigger load event for cached images
+			if (this.complete) $img.trigger('load');
+
 		});
 
 	},
