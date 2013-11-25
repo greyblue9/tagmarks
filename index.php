@@ -2,7 +2,6 @@
 
 require_once('include/common.inc.php');
 
-
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -28,6 +27,7 @@ require_once('include/common.inc.php');
 
 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script type="text/javascript" src="res/tagmarks-utils.js"></script>
 	<script type="text/javascript" src="res/tagmarks.js"></script>
 </body>
 </html>

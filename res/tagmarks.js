@@ -1,16 +1,11 @@
 
-// @author greyblue9
-
-var $; // This is just to disable some warnings in IntelliJ so it doesn't think
-       // $ is an "unresolved" global symbol.
-
 $(document).ready(function() {
 
-	TagMarks.init();
+	Tagmarks.init();
 
 });
 
-var TagMarks = {
+var Tagmarks = {
 
 	data: [],
 
@@ -29,32 +24,20 @@ var TagMarks = {
 
 		recalculate: function () {
 			var $body = $('body');
-			var $container = $('#center');
+			var $contentContainer = $('#center');
 
-			// All available area, including that available for scrollbars
-			$body.css('overflow', 'hidden');
-			this.EntireWebArea.width = $body.outerWidth(true); // incl. padding+border
-			this.EntireWebArea.height = $body.height(); // incl. padding+border
-
-			// Available area, inside scrollbars (when both present)
 			$body.css('overflow', 'scroll');
-			this.MinWebArea.width = $body.outerWidth(true); // incl. padding+border
-			this.MinWebArea.height = $body.height(); // incl. padding+border
-			this.MinThumbnailArea.width = $container.innerWidth();
-			this.MinThumbnailArea.height = $container.height();
+			this.MinThumbnailArea.width = $contentContainer.innerWidth();
+			this.MinThumbnailArea.height = $contentContainer.height();
 
-			// Set to auto for final use/rendering
 			$body.css('overflow', 'auto');
-			this.WebArea.width = $body.outerWidth(true); // incl. padding+border
-			this.WebArea.height = $body.height(); // incl. padding+border
-
 			var outerMarginTotal = $body.outerWidth(true) - $body.width();
 			this.OuterMarginWidth = Math.floor(outerMarginTotal / 2);
 		}
 	},
 
 	Thumbnails: {
-		SourceSize: {width: 319, height: 179}
+		DefaultSourceSize: {width: 319, height: 179}
 	},
 
 
@@ -63,9 +46,9 @@ var TagMarks = {
 		var me = this;
 
 		var request = $.ajax({
-			url: 'data_action.php',
+			url: 'data.php',
 			type: 'GET',
-			data: {format: 'json', secvars_post_replace: 1},
+			data: {format: 'json'},
 			dataType: 'json'
 		});
 
@@ -76,15 +59,16 @@ var TagMarks = {
 			me.settings = 'settings' in data? data.settings: {};
 
 			me.renderTagNav();
-
 			me.renderDials();
 
+			// Trigger element sizing
 			me.onResize();
 		});
 
 
 		$(window).on('resize', this.onResize);
 
+		// Trigger screen/container calculations
 		this.Viewport.recalculate();
 	},
 
@@ -94,19 +78,28 @@ var TagMarks = {
 		$container.html('');
 
 		$.each(this.tags, function(idx, tag) {
+			// Make new tag
 			var $tag = $('<div class="tag">'+tag.name+'</div>');
-			$tag.addClass('selected');
-            $tag.attr('sel_color', tag.background_color);
-            $tag.css('background-color', tag.background_color);
-			$tag.attr('tag', tag._name_alnum);
 
+			// Set CSS background color
+			$tag.css('background-color', tag.background_color);
+			// Can calculate "deselected" color now that CSS bg color is set
             var color_rgb_str = $tag.css('background-color');
-            var color_rgb = TagMarks.Utils.css_color_string_to_rgb(color_rgb_str); // [r, g, b]
+            var color_rgb =
+	            TagmarksUtils.css_color_string_to_rgb(
+		            color_rgb_str); // [r,g,b]
+            var color_hsl = // color_hsl is 3 values in range 0-1
+	            TagmarksUtils.rgbToHsl(
+	                color_rgb[0], color_rgb[1], color_rgb[2]);
+            var dark_color_rgb =
+	            TagmarksUtils.hslToRgb(
+	                color_hsl[0], color_hsl[1], color_hsl[2] *.53);
+			// Final result (darkened color for "deselected" state)
+            var dark_color_str =
+	            'rgb('+dark_color_rgb.join(',')+')'; // rgb(x,y,z)
 
-            // color_hsl is 3 values in range 0-1
-            var color_hsl = TagMarks.Utils.rgbToHsl(color_rgb[0], color_rgb[1], color_rgb[2]);
-            var dark_color_rgb = TagMarks.Utils.hslToRgb(color_hsl[0], color_hsl[1], color_hsl[2] *.53);
-            var dark_color_str = 'rgb('+dark_color_rgb.join(',')+')'; // rgb(x,y,z)
+			$tag.attr('tag', tag._name_alnum);
+			$tag.attr('sel_color', tag.background_color);
             $tag.attr('desel_color', dark_color_str);
 
             // Tag class/color selected toggle
@@ -117,16 +110,19 @@ var TagMarks = {
                 } else {
                     $tag.css('background-color', dark_color_str);
                 }
-	            TagMarks.onSelectedTagsChanged();
+	            Tagmarks.onSelectedTagsChanged();
             });
 
+			$tag.addClass('selected');
+
+			// Insert tag into container element (dials container)
 			$container.append($tag);
 		});
 
 	},
 
 	onSelectedTagsChanged: function() {
-		var $tags = $('#tag_nav_area > .tag');
+		var $tags = $('#tag_nav_area').find('> .tag');
 
 		$tags.each(function() {
 			var $tag = $(this);
@@ -166,7 +162,7 @@ var TagMarks = {
 
 	onResize: function() {
 
-		var vport = TagMarks.Viewport;
+		var vport = Tagmarks.Viewport;
 		vport.recalculate();
 
 		var thumbHorizSep = vport.OuterMarginWidth;
@@ -187,13 +183,13 @@ var TagMarks = {
 				/ THUMBS_PER_ROW
 			);
 
-		if (thumbWidth >= TagMarks.Thumbnails.SourceSize.width) {
-			thumbWidth = TagMarks.Thumbnails.SourceSize.width;
+		if (thumbWidth >= Tagmarks.Thumbnails.DefaultSourceSize.width) {
+			thumbWidth = Tagmarks.Thumbnails.DefaultSourceSize.width;
 		}
 
 		var thumbHeight = (
-			TagMarks.Thumbnails.SourceSize.height
-			/ TagMarks.Thumbnails.SourceSize.width
+			Tagmarks.Thumbnails.DefaultSourceSize.height
+			/ Tagmarks.Thumbnails.DefaultSourceSize.width
 		) * thumbWidth;
 
 		var $thumbnailLinks = $('a.thumbnail_link');
@@ -238,67 +234,7 @@ var TagMarks = {
 
 		});
 
-	},
-
-	Utils: {
-
-		css_color_string_to_rgb: function(color_str) {
-			var rgb_delim = color_str.substr(4, color_str.length - 5);
-            var parts = rgb_delim.split(/,[\s*]/);
-            return parts; // [r, g, b]
-		},
-
-		rgbToHsl: function(r, g, b) {
-
-			r /= 255, g /= 255, b /= 255;
-			var max = Math.max(r, g, b), min = Math.min(r, g, b);
-			var h, s, l = (max + min) / 2;
-
-			if(max == min){
-				h = s = 0; // achromatic
-			}else{
-				var d = max - min;
-				s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-				switch(max){
-					case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-					case g: h = (b - r) / d + 2; break;
-					case b: h = (r - g) / d + 4; break;
-				}
-				h /= 6;
-			}
-
-			return [h, s, l];
-		},
-
-        hslToRgb: function(h, s, l){
-
-			var r, g, b;
-
-			if(s == 0){
-				r = g = b = l; // achromatic
-			}else{
-				function hue2rgb(p, q, t){
-					if(t < 0) t += 1;
-					if(t > 1) t -= 1;
-					if(t < 1/6) return p + (q - p) * 6 * t;
-					if(t < 1/2) return q;
-					if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-					return p;
-				}
-
-				var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-				var p = 2 * l - q;
-				r = hue2rgb(p, q, h + 1/3);
-				g = hue2rgb(p, q, h);
-				b = hue2rgb(p, q, h - 1/3);
-			}
-
-			return [Math.floor(r * 255), Math.floor(g * 255), Math.floor(b * 255)];
-		}
-
 	}
-
-
 
 
 };
