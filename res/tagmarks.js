@@ -230,7 +230,7 @@ var TagMarks = {
 
 			$img.on('load', function () {
 				$a.css('transform', 'scale(1,1)');
-				$a.css('opacity', '1');
+				$a.css('opacity', '.8');
 			});
 
 			// Trigger load event for cached images

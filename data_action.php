@@ -17,7 +17,7 @@ require('include/common.inc.php');
 
 // load datafile
 if (!file_exists(MAIN_DATA_FILEPATH)) {
-	exit_with_fatal_error("Expecting '${MAIN_DATA_FILEPATH}' relative to script directory.");
+	exit_with_fatal_error('Expecting '.MAIN_DATA_FILEPATH.' relative to script directory.');
 }
 
 $main_data_file_contents = file_get_contents(MAIN_DATA_FILEPATH);

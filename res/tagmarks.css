@@ -1,6 +1,6 @@
 
 body {
-	background: -moz-linear-gradient(center top, #555566 0%, #000000 100%) repeat fixed 0 0 rgba(0, 0, 0, 0);
+	background: -moz-linear-gradient(center top, #006093 0%, #293f69 100%) repeat fixed 0 0 rgba(0, 0, 0, 0);
 
 
 	position: relative;
@@ -34,7 +34,7 @@ body > #left_bg {
 	width: 190px;
 	height: 100%;
 	background: black;
-	opacity: 0.3;
+	opacity: 0.4;
 	overflow: none;
 	z-index: 0;
 }
@@ -89,7 +89,7 @@ a.thumbnail_link {
 	display: inline-block;
 	position: relative;
 	text-decoration: none;
-	transition: border-color .75s ease, transform .4s ease-out, opacity .4s ease-out;
+	transition: border-color .75s ease-out, transform .4s ease-out, opacity .75s ease-out, box-shadow .75s ease-out;
 	transform: scale(0.8, 0.8);
 	opacity: 0;
 	z-index: 95;
@@ -103,11 +103,15 @@ a.thumbnail_link > img {
 	position: absolute;
 	top: 0;
 	width: 100%;
+
 }
 
 a.thumbnail_link:hover {
-	border: 2px solid #4087d7;
-	-moz-transition: border-color box-shadow .01s ease;
+	border: 2px solid #000000;
+	-moz-transition: border-color .01s ease;
+	-moz-transition: box-shadow .01s ease;
+	-moz-transition: opacity .01s ease;
 	box-shadow: 0 0 25px #000000;
 	z-index: 100;
+	opacity: 1.0 !important;
 }
