@@ -67,12 +67,10 @@ var Tagmarks = {
 				return;
 			}
 
-			$('.tag_strip').slideUp(500, 'swing');
-			setTimeout(function () {
-				$('a.thumbnail_link').animate({
-					marginBottom: 0
-				}, 750, 'swing');
-			}, 100);
+			$('.tag_strip').slideUp(250, 'swing');
+			$('a.thumbnail_link').animate({
+				marginBottom: 0
+			}, 250, 'swing');
 		},
 
 		showSiteTagIndicators: function(noAnimation) {
@@ -85,10 +83,8 @@ var Tagmarks = {
 
 			$('a.thumbnail_link').animate({
 				marginBottom: '20px'
-			}, 750, 'swing');
-			setTimeout(function () {
-				$('.tag_strip').slideDown(500, 'swing');
-			}, 100);
+			}, 250, 'swing');
+			$('.tag_strip').slideDown(250, 'swing');
 		},
 
 		siteTagIndicatorsVisible: function() {
@@ -147,12 +143,18 @@ var Tagmarks = {
 				// Hide site tag indicators after 1s
 				me.View.hideSiteTagIndicators(true); // don't animate
 
+
+
 				$('#left')
 					.on('mouseenter', function() {
-						me.View.showSiteTagIndicators(true);
+						me.setEventAfterUninterruptedDelay(function() {
+							me.View.showSiteTagIndicators();
+						}, 250);
 					})
 					.on('mouseleave', function() {
-						me.View.hideSiteTagIndicators(true);
+						me.setEventAfterUninterruptedDelay(function () {
+							me.View.hideSiteTagIndicators();
+						}, 250);
 					});
 
 
@@ -164,6 +166,21 @@ var Tagmarks = {
 
 		// Trigger screen/container calculations
 		this.Viewport.recalculate();
+	},
+
+	setEventAfterUninterruptedDelay: function(callback, delay) {
+		if ('timeoutSet' in Tagmarks && Tagmarks.timeoutSet == true) {
+			clearTimeout(Tagmarks.timeout);
+			Tagmarks.timeoutSet = false;
+		}
+
+		Tagmarks.timeout = setTimeout(function() {
+			Tagmarks.timeoutSet = false;
+			clearTimeout(Tagmarks.timeout);
+			callback();
+		}, delay);
+
+		Tagmarks.timeoutSet = true;
 	},
 
 	sortTags: function() {
