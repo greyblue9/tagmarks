@@ -13,6 +13,18 @@ var Tagmarks = {
 	sites: [],
 	settings: {},
 
+	LOGGING_ENABLED: false,
+
+	log: function(str, severity) {
+		if (Tagmarks.LOGGING_ENABLED === true) {
+			if (typeof severity === 'string' && severity == 'error') {
+				console.error(str);
+			} else {
+				console.log(str);
+			}
+		}
+	},
+
 	Viewport: {
 		EntireWebArea: {width: null, height: null},
 		MinWebArea: {width: null, height: null},
@@ -138,13 +150,13 @@ var Tagmarks = {
 	getTagsByIdNames: function() {
 		var thisFunc = arguments.callee;
 		if (typeof thisFunc.tagsByIdNames === 'undefined') {
-			console.log("Initializing tags by idNames list");
+			Tagmarks.log("Initializing tags by idNames list");
 			thisFunc.tagsByIdNames = {};
 			$.each(Tagmarks.tags, function(tagIdx, tag) {
 				thisFunc.tagsByIdNames[tag.id_name] = tag;
 			})
 		} else {
-			console.log("Found tags by idNames list (already initialized)");
+			Tagmarks.log("Found tags by idNames list (already initialized)");
 		}
 
 		return thisFunc.tagsByIdNames;
@@ -155,7 +167,7 @@ var Tagmarks = {
 		if (tagIdName in this.getTagsByIdNames()) {
 			return this.getTagsByIdNames()[tagIdName];
 		} else {
-			console.error('Tag not found with id_name: "'+tagIdName+'"');
+			Tagmarks.log('Tag not found with id_name: "'+tagIdName+'"', 'error');
 			return {};
 		}
 

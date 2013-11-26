@@ -25,7 +25,7 @@ secure_vars_filename = secure_vars.ini.php
 ; to update the relative path here to something such as "../private/tagmarks"
 secure_vars_relative_path = ../private/tagmarks
 
-bypass_secure_vars = 0
+bypass_secure_vars = 1
 
 
 [Developers]
