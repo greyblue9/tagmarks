@@ -58,6 +58,44 @@ var Tagmarks = {
 			'errorIdName' in response && response.errorIdName == errorIdName);
 	},
 
+	View: {
+		hideSiteTagIndicators: function(noAnimation) {
+
+			if (noAnimation) {
+				$('.tag_strip').hide();
+				$('a.thumbnail_link').css('margin-bottom', 0);
+				return;
+			}
+
+			$('.tag_strip').slideUp(500, 'swing');
+			setTimeout(function () {
+				$('a.thumbnail_link').animate({
+					marginBottom: 0
+				}, 750, 'swing');
+			}, 100);
+		},
+
+		showSiteTagIndicators: function(noAnimation) {
+			
+			if (noAnimation) {
+				$('.tag_strip').show();
+				$('a.thumbnail_link').css('margin-bottom', '20px');
+				return;
+			}
+
+			$('a.thumbnail_link').animate({
+				marginBottom: '20px'
+			}, 750, 'swing');
+			setTimeout(function () {
+				$('.tag_strip').slideDown(500, 'swing');
+			}, 100);
+		},
+
+		siteTagIndicatorsVisible: function() {
+			return $('.tag_strip:first').is(':visible');
+		}
+	},
+
 	init: function() {
 
 		var me = this;
@@ -105,6 +143,18 @@ var Tagmarks = {
 
 				// Trigger element sizing
 				me.onResize();
+
+				// Hide site tag indicators after 1s
+				me.View.hideSiteTagIndicators(true); // don't animate
+
+				$('#left')
+					.on('mouseenter', function() {
+						me.View.showSiteTagIndicators(true);
+					})
+					.on('mouseleave', function() {
+						me.View.hideSiteTagIndicators(true);
+					});
+
 
 			});
 		});

@@ -95,7 +95,7 @@ a.thumbnail_link:hover {
 	-moz-transition: border-color .01s ease;
 	-moz-transition: box-shadow .01s ease;
 	-moz-transition: opacity .01s ease;
-	box-shadow: 0 0 15px #777;
+	box-shadow: 0 0 15px #000;
 	z-index: 1000 !important;
 	opacity: 1.0 !important;
 }
