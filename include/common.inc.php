@@ -132,13 +132,10 @@ class Errors {
 		if ($format == 'html') {
 			print('<!DOCTYPE html>
 				<html>
-					<head>
-						<link rel="stylesheet" href="advanced.css" />
-					</head>
 					<body>
-						<div class="fatal_error">
-							'.$error_text.'
-							<pre class="more_info">'.$more_info.'</pre>
+						<div>
+							<div style="font-weight: bold; font-size: 150%">'.$error_text.'</div>
+							<pre>'.$more_info.'</pre>
 						</div>
 					</body>
 				</html>');
