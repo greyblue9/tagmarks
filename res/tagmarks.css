@@ -1,14 +1,19 @@
 
 body {
-	background: -moz-linear-gradient(center top, #666666 0%, #111111 100%) repeat fixed 0 0 rgba(0, 0, 0, 0);
-
-
 	position: relative;
 	color: white;
 	margin: 0;
 	padding: 0;
 	font-size: 14px;
 	font-family: sans-serif;
+}
+
+html {
+	background: url(../backgrounds/blue_radial.jpg) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
 
 .fatal_error {
