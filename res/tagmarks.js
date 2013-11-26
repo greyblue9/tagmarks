@@ -52,6 +52,11 @@ var Tagmarks = {
 		DefaultSourceSize: {width: 319, height: 179}
 	},
 
+	responseHadErrorWithIdName: function(response, errorIdName) {
+		return (typeof response == 'object' &&
+			'error' in response && response.error == true &&
+			'errorIdName' in response && response.errorIdName == errorIdName);
+	},
 
 	init: function() {
 
@@ -74,14 +79,26 @@ var Tagmarks = {
 
 				me.renderTagNav();
 
-				var state = loadStateResponse.state;
-				var selectedTagIdNames = state.selected_tags;
-
-				$.each(selectedTagIdNames, function(idx, tagIdName) {
-					var $navTag = $('#tag_nav_area > .tag[tag='+tagIdName+']');
-					$navTag.addClass('selected');
-					$navTag.css('background-color', $navTag.attr('sel_color'));
-				});
+				if (me.responseHadErrorWithIdName(loadStateResponse, 'NoSavedState')) {
+					// No saved state
+					// Select all tags
+					var $navTags = $('#tag_nav_area > .tag');
+					$navTags.each(function() {
+						var $navTag = $(this);
+						$navTag.addClass('selected');
+						$navTag.css('background-color', $navTag.attr('sel_color'));
+					});
+				} else {
+					// Saved state present
+					// Select tags as previously saved
+					var state = loadStateResponse.state;
+					var selectedTagIdNames = state.selected_tags;
+					$.each(selectedTagIdNames, function (idx, tagIdName) {
+						var $navTag = $('#tag_nav_area > .tag[tag=' + tagIdName + ']');
+						$navTag.addClass('selected');
+						$navTag.css('background-color', $navTag.attr('sel_color'));
+					});
+				}
 
 				me.renderDials();
 				me.onSelectedTagsChanged();

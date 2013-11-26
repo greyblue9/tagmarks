@@ -69,6 +69,7 @@ function loadState() {
 	if (!file_exists(SAVE_FILE)) {
 		return array(
 			'error' => true,
+			'errorIdName' => 'NoSavedState',
 			'errorText' => 'Saved state file does not exist',
 			'method' => $_SERVER['REQUEST_METHOD'],
 			'server_action' => 'load_state',
