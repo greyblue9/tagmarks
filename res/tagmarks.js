@@ -15,12 +15,12 @@ var Tagmarks = {
 
 	LOGGING_ENABLED: false,
 
-	log: function(str, severity) {
+	log: function(obj, severity) {
 		if (Tagmarks.LOGGING_ENABLED === true) {
 			if (typeof severity === 'string' && severity == 'error') {
-				console.error(str);
+				console.error(obj);
 			} else {
-				console.log(str);
+				console.log(obj);
 			}
 		}
 	},
@@ -70,11 +70,26 @@ var Tagmarks = {
 			me.sites = data.sites;
 			me.settings = 'settings' in data? data.settings: {};
 
-			me.renderTagNav();
-			me.renderDials();
+			me.loadState(function(loadStateResponse) {
 
-			// Trigger element sizing
-			me.onResize();
+				me.renderTagNav();
+
+				var state = loadStateResponse.state;
+				var selectedTagIdNames = state.selected_tags;
+
+				$.each(selectedTagIdNames, function(idx, tagIdName) {
+					var $navTag = $('#tag_nav_area > .tag[tag='+tagIdName+']');
+					$navTag.addClass('selected');
+					$navTag.css('background-color', $navTag.attr('sel_color'));
+				});
+
+				me.renderDials();
+				me.onSelectedTagsChanged();
+
+				// Trigger element sizing
+				me.onResize();
+
+			});
 		});
 
 
@@ -110,6 +125,10 @@ var Tagmarks = {
             var dark_color_str =
 	            'rgb('+dark_color_rgb.join(',')+')'; // rgb(x,y,z)
 
+			if ('foreground_color' in tag) {
+				$tag.css('color', tag.foreground_color);
+			}
+
 			$tag.attr('tag', tag.id_name);
 			$tag.attr('sel_color', tag.background_color);
             $tag.attr('desel_color', dark_color_str);
@@ -125,7 +144,9 @@ var Tagmarks = {
 	            Tagmarks.onSelectedTagsChanged();
             });
 
-			$tag.addClass('selected');
+			// Start deselected
+			$tag.removeClass('selected');
+			$tag.css('background-color', dark_color_str);
 
 			// Insert tag into container element (dials container)
 			$container.append($tag);
@@ -136,13 +157,72 @@ var Tagmarks = {
 	onSelectedTagsChanged: function() {
 		var $tags = $('#tag_nav_area').find('> .tag');
 
+		$('a.thumbnail_link').hide();
+
 		$tags.each(function() {
 			var $tag = $(this);
 			var tagId = $tag.attr('tag');
 			if ($tag.hasClass('selected')) {
 				$('a.thumbnail_link[tags~="'+tagId+'"]').show();
-			} else {
-				$('a.thumbnail_link[tags~="'+tagId+'"]').hide();
+			}
+		});
+
+		Tagmarks.saveState();
+	},
+
+	loadState: function(callback) {
+		$.ajax({
+			url: "state.php",
+			type: "GET",
+			data: {placeholderVar: 'placeholderVal'},
+			success: function (data, textStatus, jqXHR) {
+				callback(data);
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				Tagmarks.log('loadState $.ajax error handler invoked', 'error');
+				Tagmarks.log({
+					jQueryAjaxErrorHandlerArgs: {
+						jqXHR: jqXHR,
+						textStatus: textStatus,
+						errorThrown: errorThrown
+					}
+				}, 'error');
+			}
+		});
+	},
+
+	saveState: function() {
+
+		var selTagIdNames = $('#tag_nav_area > .tag.selected').get().reduce(
+			function (lastValue, navTagElement, index, array) {
+				var $navTag = $(navTagElement);
+				lastValue.push($navTag.attr('tag'));
+				return lastValue;
+			},
+			[] // initial value for "lastValue" (here, empty array)
+		);
+
+		var selTagIdNamesCSV = selTagIdNames.join(',');
+
+		$.ajax({
+			url: "state.php",
+			type: "POST",
+			data: {
+				selTagIdNamesCSV: selTagIdNamesCSV
+			},
+			success: function (data, textStatus, jqXHR) {
+				Tagmarks.log('saveState success callback');
+				Tagmarks.log(data);
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				Tagmarks.log('saveState $.ajax error handler invoked', 'error');
+				Tagmarks.log({
+					jQueryAjaxErrorHandlerArgs: {
+						jqXHR: jqXHR,
+						textStatus: textStatus,
+						errorThrown: errorThrown
+					}
+				}, 'error');
 			}
 		});
 	},
@@ -229,14 +309,16 @@ var Tagmarks = {
 		$container.html('');
 
 		this.sortSites();
+		var sites = this.sites;
 
-		$.each(this.sites, function(siteIdx, site) {
+		$.each(sites, function(siteIdx, site) {
 
 			var $a = $('<a />');
 			$a.attr('href', site.url);
 			$a.attr('title', site.name);
 			$a.addClass('thumbnail_link');
 			$a.attr('tags', site.tags.join(' '));
+			$a.css('z-index', sites.length - siteIdx);
 			$a.disableSelection();
 
 			var $img = $('<img />');
@@ -244,7 +326,20 @@ var Tagmarks = {
 			$img.attr('title', site.name);
 			$img.disableSelection();
 
+			var $tagStrip = $('<div class="tag_strip" />');
+			$.each(site.tags, function(tagIdx, tagIdName) {
+				var tag = Tagmarks.getTagByIdName(tagIdName);
+				var $tag = $('<div class="tag" />');
+				$tag.text(tag.name);
+				$tag.css('background-color', tag.background_color);
+				if ('foreground_color' in tag) {
+					$tag.css('color', tag.foreground_color);
+				}
+				$tagStrip.append($tag);
+			});
+
 			$a.append($img);
+			$a.append($tagStrip);
 
 			$container.append($a);
 
@@ -299,8 +394,7 @@ var Tagmarks = {
 
 		$thumbnailLinks.css({
 			width: thumbWidth + 'px',
-			height: thumbHeight + 'px',
-			margin: '0'
+			height: thumbHeight + 'px'
 		});
 
 		// TODO: Replace this logic w/ row divs or something simpler/better
@@ -329,7 +423,7 @@ var Tagmarks = {
 
 			$img.on('load', function () {
 				$a.css('transform', 'scale(1,1)');
-				$a.css('opacity', '.8');
+				$a.css('opacity', '1');
 			});
 
 			// Trigger load event for cached images

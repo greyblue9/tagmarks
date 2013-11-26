@@ -6,6 +6,12 @@ use Tagmarks\Errors as Errors;
 use Tagmarks\Json as Json;
 use Tagmarks\Common as Common;
 
+
+// FirePHP library for FirePHP Firebug extension
+require('include/firephp/fb.php');
+
+
+
 Setup::readIniFiles();
 
 

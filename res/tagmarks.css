@@ -1,4 +1,12 @@
 
+html {
+	background: url(../backgrounds/blue_radial.jpg) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
 body {
 	position: relative;
 	color: white;
@@ -8,32 +16,8 @@ body {
 	font-family: sans-serif;
 }
 
-html {
-	background: url(../backgrounds/blue_radial.jpg) no-repeat center center fixed;
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	-o-background-size: cover;
-	background-size: cover;
-}
-
-.fatal_error {
-	margin: 10px;
-	padding: 10px;
-	border: 2px solid #fd778e;
-	background: #fec5ce;
-	color: black;
-	font-size: 24px;
-	font-weight: bold;
-}
-.fatal_error .more_info {
-	font-family: Consolas, "Deja Vu Sans Mono", monospace;
-	font-size: 16px;
-	font-weight: normal;
-}
-
 body > #left_bg {
 	position: fixed;
-	/* width is calculated */
 	left: 0;
 	top: 0;
 	width: 190px;
@@ -46,7 +30,6 @@ body > #left_bg {
 
 body > #left {
 	position: fixed;
-	/* width is calculated */
 	left: 0;
 	top: 0;
 	width: 190px;
@@ -55,49 +38,66 @@ body > #left {
 	z-index: 1;
 }
 
+body > #left .tag {
+	/* unselected */
+	margin: 5px 10px;
+	font-size: 18px;
+	color: #fff;
+	padding: 3px 5px;
+	font-weight: bold;
+	cursor: pointer;
+	border: 2px solid transparent;
+	user-select: none;
+	opacity: 0.3;
+}
+
+body > #left .tag.selected {
+	/* background luminance normal */
+	background-image: url("img/tag_check_mark_faint.png");
+	background-origin: content-box;
+	background-position: right center;
+	background-repeat: no-repeat;
+	border: 2px solid transparent;
+	opacity: 1;
+}
+
+body > #left .tag:hover {
+	box-shadow: 0 0 8px #000;
+}
+
+body > #left .tag.selected:hover {
+	box-shadow: 0 0 8px #777;
+}
+
 body > #center {
 	margin-left: 190px;
 	overflow: auto;
 	line-height: 0;
 }
 
-#left .tag {
-	/* unselected */
-	margin: 5px 10px;
-	font-size: 18px;
-	color: black;
-	border: 2px solid rgba(0, 0, 0, 0.4);
-	padding: 3px 5px;
-	font-weight: bold;
-	cursor: pointer;
-}
-
-#left .tag.selected {
-	/* background luminance normal */
-	border: 2px solid rgba(255, 255, 255, 0.75);
-	background-image: url("img/tag_check_mark_faint.png");
-	background-origin: content-box;
-	background-position: right center;
-	background-repeat: no-repeat;
-}
-
-#left .tag:hover {
-	box-shadow: 0 0 3px white;
-}
-
-#left .tag.selected:hover {
-	box-shadow: 0 0 8px white;
-}
 
 a.thumbnail_link {
-	border: 2px solid #000;
+	/*border: 2px solid #000;*/
 	display: inline-block;
 	position: relative;
 	text-decoration: none;
 	transition: border-color .75s ease-out, transform .4s ease-out, opacity .75s ease-out, box-shadow .75s ease-out;
 	transform: scale(0.8, 0.8);
 	opacity: 0;
-	z-index: 95;
+	z-index: 0;
+
+	margin: 0 0 20px 0;
+	user-select: none;
+}
+
+a.thumbnail_link:hover {
+	/*border: 2px solid #ffffff;*/
+	-moz-transition: border-color .01s ease;
+	-moz-transition: box-shadow .01s ease;
+	-moz-transition: opacity .01s ease;
+	box-shadow: 0 0 15px #777;
+	z-index: 1000 !important;
+	opacity: 1.0 !important;
 }
 
 a.thumbnail_link > img {
@@ -108,15 +108,40 @@ a.thumbnail_link > img {
 	position: absolute;
 	top: 0;
 	width: 100%;
+}
+
+a.thumbnail_link > div.tag_strip {
+	color: #ffffff;
+	font-family: Roboto, sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	height: 16px;
+	left: 0;
+	overflow: hidden;
+	position: absolute;
+	text-align: center;
+	top: 100%;
+	width: 100%;
+}
+
+a.thumbnail_link > div.tag_strip > div.tag {
+	float: left;
+	height: 14px;
+	background: #ff9955;
+	line-height: 12px;
+	padding: 0 3px;
+}
+
+a.thumbnail_link > div.tag_strip > div.tag + div.tag {
 
 }
 
-a.thumbnail_link:hover {
-	border: 2px solid #000000;
-	-moz-transition: border-color .01s ease;
-	-moz-transition: box-shadow .01s ease;
-	-moz-transition: opacity .01s ease;
-	box-shadow: 0 0 25px #000000;
-	z-index: 100;
-	opacity: 1.0 !important;
+a.thumbnail_link > div.tag_strip > div.clear {
+	clear: both;
 }
+
+
+
+
+
+
