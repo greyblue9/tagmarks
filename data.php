@@ -47,7 +47,7 @@ if ($secure_vars) {
 
 
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 $output = JSON_INDENTED_OUTPUT?
 	get_indented_json_string(json_encode($data_with_secvars, JSON_NUMERIC_CHECK)):

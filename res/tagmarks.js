@@ -98,7 +98,7 @@ var Tagmarks = {
             var dark_color_str =
 	            'rgb('+dark_color_rgb.join(',')+')'; // rgb(x,y,z)
 
-			$tag.attr('tag', tag._name_alnum);
+			$tag.attr('tag', tag.id_name);
 			$tag.attr('sel_color', tag.background_color);
             $tag.attr('desel_color', dark_color_str);
 
@@ -135,10 +135,88 @@ var Tagmarks = {
 		});
 	},
 
+	getTagsByIdNames: function() {
+		var thisFunc = arguments.callee;
+		if (typeof thisFunc.tagsByIdNames === 'undefined') {
+			console.log("Initializing tags by idNames list");
+			thisFunc.tagsByIdNames = {};
+			$.each(Tagmarks.tags, function(tagIdx, tag) {
+				thisFunc.tagsByIdNames[tag.id_name] = tag;
+			})
+		} else {
+			console.log("Found tags by idNames list (already initialized)");
+		}
+
+		return thisFunc.tagsByIdNames;
+	},
+
+	getTagByIdName: function(tagIdName) {
+
+		if (tagIdName in this.getTagsByIdNames()) {
+			return this.getTagsByIdNames()[tagIdName];
+		} else {
+			console.error('Tag not found with id_name: "'+tagIdName+'"');
+			return {};
+		}
+
+	},
+
+	sortSites: function() {
+		var sites = this.sites;
+
+		sites.sort(function(a, b) {
+
+			$.each([a, b], function(cmpIdx, cmpSite) {
+				cmpSite.bestTagIdName = null;
+				cmpSite.bestTagPriority = -1;
+
+				$.each(cmpSite.tags, function (cmpSiteTagIdx, cmpSiteTagIdName) {
+					var tag = Tagmarks.getTagByIdName(cmpSiteTagIdName);
+					if (tag.priority > cmpSite.bestTagPriority) {
+						cmpSite.bestTagIdName = tag.id_name;
+						cmpSite.bestTagPriority = tag.priority;
+					} else if (tag.priority == cmpSite.bestTagPriority && tag.id_name > cmpSite.bestTagIdName) {
+						cmpSite.bestTagIdName = tag.id_name;
+						cmpSite.bestTagPriority = tag.priority;
+					} else {
+						return;
+					}
+				});
+			});
+
+			if (a.bestTagIdName == b.bestTagIdName) {
+				// both sites have same highest-priority tag
+				// sort by site name alphabetically
+				return a.name < b.name?
+					-1:
+					(a.name == b.name?
+						0:
+						1);
+			}
+
+			if (a.bestTagPriority < b.bestTagPriority) {
+				return -1;
+			} else if (b.bestTagPriority < a.bestTagPriority) {
+				return 1;
+			} else if (a.bestTagPriority == b.bestTagPriority) {
+				// Sites' best tags each have same priority
+				// Sort based on alphabetically first tag
+				return a.bestTagIdName < b.bestTagIdName?
+					-1: 1;
+			} else {
+				console.error('Unknown site sorting condition');
+				return 0;
+			}
+
+		});
+	},
+
 	renderDials: function() {
 
 		var $container = $('#center');
 		$container.html('');
+
+		this.sortSites();
 
 		$.each(this.sites, function(siteIdx, site) {
 
@@ -147,16 +225,29 @@ var Tagmarks = {
 			$a.attr('title', site.name);
 			$a.addClass('thumbnail_link');
 			$a.attr('tags', site.tags.join(' '));
+			$a.disableSelection();
 
 			var $img = $('<img />');
 			$img.attr('src', site.thumbnail);
 			$img.attr('title', site.name);
+			$img.disableSelection();
 
 			$a.append($img);
 
 			$container.append($a);
 
 		});
+
+		$container.sortable({
+			revert: false,
+			containment: 'parent',
+			helper: 'clone',
+			opacity: 0.5,
+			scroll: true,
+			zIndex: 200,
+			tolerance: "pointer"
+		});
+		$container.disableSelection();
 
 	},
 
