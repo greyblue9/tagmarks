@@ -92,8 +92,8 @@ var Tagmarks = {
 					// Saved state present
 					// Select tags as previously saved
 					var state = loadStateResponse.state;
-					var selectedTagIdNames = state.selected_tags;
-					$.each(selectedTagIdNames, function (idx, tagIdName) {
+					var selTagIdNames = state.selTagIdNames;
+					$.each(selTagIdNames, function (idx, tagIdName) {
 						var $navTag = $('#tag_nav_area > .tag[tag=' + tagIdName + ']');
 						$navTag.addClass('selected');
 						$navTag.css('background-color', $navTag.attr('sel_color'));
@@ -101,7 +101,7 @@ var Tagmarks = {
 				}
 
 				me.renderDials();
-				me.onSelectedTagsChanged();
+				me.onSelectedTagsChanged(true); // no save
 
 				// Trigger element sizing
 				me.onResize();
@@ -116,10 +116,33 @@ var Tagmarks = {
 		this.Viewport.recalculate();
 	},
 
+	sortTags: function() {
+		var tags = this.tags;
+
+		tags.sort(function (a, b) {
+
+			if (a.priority < b.priority) {
+				return -1;
+			} else if (b.priority < a.priority) {
+				return 1;
+			} else if (a.priority == b.priority) {
+				// Sites' best tags each have same priority
+				// Sort based on alphabetically first tag
+				return a.name < b.name ? -1 : 1;
+			} else {
+				console.error('Unknown site sorting condition');
+				return 0;
+			}
+
+		});
+	},
+
 	renderTagNav: function() {
 
 		var $container = $('#tag_nav_area');
 		$container.html('');
+
+		Tagmarks.sortTags();
 
 		$.each(this.tags, function(idx, tag) {
 			// Make new tag
@@ -171,7 +194,7 @@ var Tagmarks = {
 
 	},
 
-	onSelectedTagsChanged: function() {
+	onSelectedTagsChanged: function(noSave) {
 		var $tags = $('#tag_nav_area').find('> .tag');
 
 		$('a.thumbnail_link').hide();
@@ -184,7 +207,10 @@ var Tagmarks = {
 			}
 		});
 
-		Tagmarks.saveState();
+		if (typeof noSave == 'undefined' || !noSave) {
+			Tagmarks.saveState();
+		}
+
 	},
 
 	loadState: function(callback) {
@@ -219,20 +245,47 @@ var Tagmarks = {
 			[] // initial value for "lastValue" (here, empty array)
 		);
 
-		var selTagIdNamesCSV = selTagIdNames.join(',');
-
 		$.ajax({
 			url: "state.php",
 			type: "POST",
-			data: {
-				selTagIdNamesCSV: selTagIdNamesCSV
-			},
+			data: JSON.stringify({
+				state: {
+					selTagIdNames: selTagIdNames
+				}
+			}),
+			contentType: 'application/json',
 			success: function (data, textStatus, jqXHR) {
 				Tagmarks.log('saveState success callback');
 				Tagmarks.log(data);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
 				Tagmarks.log('saveState $.ajax error handler invoked', 'error');
+				Tagmarks.log({
+					jQueryAjaxErrorHandlerArgs: {
+						jqXHR: jqXHR,
+						textStatus: textStatus,
+						errorThrown: errorThrown
+					}
+				}, 'error');
+			}
+		});
+	},
+
+	saveSites: function () {
+
+		$.ajax({
+			url: "state.php",
+			type: "POST",
+			data: JSON.stringify({
+				sites: Tagmarks.sites
+			}),
+			contentType: 'application/json',
+			success: function (data, textStatus, jqXHR) {
+				Tagmarks.log('saveSites success callback');
+				Tagmarks.log(data);
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				Tagmarks.log('saveSites $.ajax error handler invoked', 'error');
 				Tagmarks.log({
 					jQueryAjaxErrorHandlerArgs: {
 						jqXHR: jqXHR,
@@ -274,6 +327,10 @@ var Tagmarks = {
 		var sites = this.sites;
 
 		sites.sort(function(a, b) {
+
+			if ('order' in a && 'order' in b) {
+				return a.order < b.order ? -1 : (a.order == b.order ? 0 : 1);
+			}
 
 			$.each([a, b], function(cmpIdx, cmpSite) {
 				cmpSite.bestTagIdName = null;
@@ -335,6 +392,8 @@ var Tagmarks = {
 			$a.attr('title', site.name);
 			$a.addClass('thumbnail_link');
 			$a.attr('tags', site.tags.join(' '));
+			$a.attr('site_id', site.id);
+			$a.attr('site_idx', siteIdx);
 			$a.css('z-index', sites.length - siteIdx);
 			$a.disableSelection();
 
@@ -369,10 +428,25 @@ var Tagmarks = {
 			opacity: 0.5,
 			scroll: true,
 			zIndex: 200,
-			tolerance: "pointer"
+			tolerance: "pointer",
+
+			stop: Tagmarks.onSortChanged
 		});
 		$container.disableSelection();
 
+	},
+
+	onSortChanged: function(event, ui) {
+		var $container = $('#center');
+		$container.children('a.thumbnail_link').each(function(dialDomIdx, dialElement) {
+			var $dialElement = $(dialElement);
+			var site_id = $dialElement.attr('site_id');
+			var site_idx = $dialElement.attr('site_idx');
+			var site = Tagmarks.sites[site_idx];
+			site.order = dialDomIdx;
+		});
+
+		Tagmarks.saveSites();
 	},
 
 	onResize: function() {
