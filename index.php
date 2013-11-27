@@ -41,32 +41,34 @@ header('Content-Type: text/html; charset=utf-8');
 				<tr>
 					<td>Site URL</td>
 					<td>
-						<input type="text" value="http://www.example.com/" />
+						<input type="text" class="site_url" value="http://www.example.com/" />
 					</td>
 				</tr>
 				<tr>
 					<td>Site Name</td>
 					<td>
-						<input type="text" value="Example Site"/>
+						<input type="text" class="site_name" value="Example Site"/>
 					</td>
 				</tr>
 				<tr>
 					<td>Thumbnail URL</td>
 					<td>
-						<input type="text" value="/thumbsets/default/ExampleSite.png" />
+						<input type="text" class="thumbnail_url" value="/thumbsets/default/ExampleSite.png" />
 					</td>
 				</tr>
 				<tr>
 					<td>Site Tags</td>
+					<td id="add_site_dialog_tags_container"></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
 					<td>
-						<span class="tag">
-							<input type="checkbox" />
-							Daily
-						</span>
-						<span class="tag">
-							<input type="checkbox"/>
-							Daily
-						</span>
+						<div class="button action_save_new_site">
+							Add Site
+						</div>
+						<div class="button action_cancel_new_site">
+							Cancel
+						</div>
 					</td>
 				</tr>
 			</table>

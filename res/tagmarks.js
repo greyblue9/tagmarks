@@ -59,7 +59,12 @@ var Tagmarks = {
 	},
 
 	View: {
+
+		siteTagIndicatorsLocked: false,
+
 		hideSiteTagIndicators: function(noAnimation) {
+
+			if (Tagmarks.View.siteTagIndicatorsLocked) return;
 
 			if (noAnimation) {
 				$('.tag_strip').hide();
@@ -74,6 +79,8 @@ var Tagmarks = {
 		},
 
 		showSiteTagIndicators: function(noAnimation) {
+
+			if (Tagmarks.View.siteTagIndicatorsLocked) return;
 			
 			if (noAnimation) {
 				$('.tag_strip').show();
@@ -89,6 +96,14 @@ var Tagmarks = {
 
 		siteTagIndicatorsVisible: function() {
 			return $('.tag_strip:first').is(':visible');
+		},
+
+		lockSiteTagIndicators: function() {
+			Tagmarks.View.siteTagIndicatorsLocked = true;
+		},
+
+		unlockSiteTagIndicators: function () {
+			Tagmarks.View.siteTagIndicatorsLocked = false;
 		}
 	},
 
@@ -158,7 +173,15 @@ var Tagmarks = {
 					});
 
 				$('div.button.action_add_site').click(function() {
-					$('#add_site_dialog').show();
+					me.showAddSiteDialog();
+				});
+
+				$('div.button.action_cancel_new_site').click(function() {
+					me.dismissAddSiteDialog();
+				});
+
+				$('div.button.action_save_new_site').click(function () {
+					me.saveNewSiteFromDialog();
 				});
 
 			});
@@ -169,6 +192,74 @@ var Tagmarks = {
 
 		// Trigger screen/container calculations
 		this.Viewport.recalculate();
+	},
+
+	showAddSiteDialog: function() {
+
+		Tagmarks.View.showSiteTagIndicators(true);
+		Tagmarks.View.lockSiteTagIndicators();
+
+		var $tagsContainer = $('#add_site_dialog_tags_container');
+		$tagsContainer.html('');
+
+		$.each(Tagmarks.tags, function(tagIdx, tag) {
+			var $tag = $('<span class="tag" />');
+			var $checkbox = $('<input type="checkbox" />');
+			$checkbox.attr('tag_id_name', tag.id_name);
+			var $label = $('<span>'+tag.name+'</span>');
+			$tag.append($checkbox);
+			$tag.append($label);
+
+			$tag.css('background-color', tag.background_color);
+			if ('foreground_color' in tag) {
+				$tag.css('color', tag.foreground_color);
+			}
+
+			$tagsContainer.append($tag);
+		});
+
+		$('#add_site_dialog').show();
+	},
+
+	dismissAddSiteDialog: function () {
+
+		Tagmarks.View.unlockSiteTagIndicators();
+		Tagmarks.View.hideSiteTagIndicators();
+
+		$('#add_site_dialog').hide();
+	},
+
+	saveNewSiteFromDialog: function() {
+		var siteUrl = $('#add_site_dialog input.site_url').val();
+		var siteName = $('#add_site_dialog input.site_name').val();
+		var thumbnailUrl = $('#add_site_dialog input.thumbnail_url').val();
+		var $siteTagCheckboxes = $('#add_site_dialog .tag > input[type=checkbox]:checked');
+
+		var siteTags = [];
+
+		$siteTagCheckboxes.each(function(idx, checkbox) {
+			var $checkbox = $(checkbox);
+			siteTags.push($checkbox.attr('tag_id_name'));
+		});
+
+		var site = {
+			name: siteName,
+			url: siteUrl,
+			thumbnail: thumbnailUrl,
+			tags: siteTags,
+			id: Tagmarks.generateSiteId()
+		};
+
+		Tagmarks.sites.push(site);
+		Tagmarks.saveSites(function() {
+			window.location.reload();
+		});
+
+		Tagmarks.dismissAddSiteDialog();
+	},
+
+	generateSiteId: function() {
+		return Math.floor(Math.random() * 89999999) + 10000000;
 	},
 
 	setEventAfterUninterruptedDelay: function(callback, delay) {
@@ -341,7 +432,7 @@ var Tagmarks = {
 		});
 	},
 
-	saveSites: function () {
+	saveSites: function (callback) {
 
 		$.ajax({
 			url: "state.php",
@@ -353,6 +444,9 @@ var Tagmarks = {
 			success: function (data, textStatus, jqXHR) {
 				Tagmarks.log('saveSites success callback');
 				Tagmarks.log(data);
+				if (typeof callback == 'function') {
+					callback();
+				}
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
 				Tagmarks.log('saveSites $.ajax error handler invoked', 'error');
