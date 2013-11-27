@@ -141,7 +141,25 @@ a.thumbnail_link > div.tag_strip > div.clear {
 }
 
 
+#controls_area {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	margin-bottom: 10px;
+}
 
+#controls_area > .button {
+	color: #ffffff;
+	font-size: 18px;
+	font-weight: bold;
+	text-shadow: 1px 1px 2px #000;
+	line-height: 27px;
 
+	cursor: pointer;
+	margin: 5px 10px;
+	padding: 0 5px;
 
+	border: 2px solid rgba(0, 0, 0, 0.5);
+	background: #677096 url(img/button_bg.png) repeat-x top;
+}
 

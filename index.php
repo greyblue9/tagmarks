@@ -25,10 +25,21 @@ header('Content-Type: text/html; charset=utf-8');
 
 		<div id="tag_nav_area"></div>
 
+
+		<div id="controls_area">
+
+
+
+			<div class="button add_icon">
+				Add Site
+			</div>
+
+		</div>
+
 	</div>
 
 
-	<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>-->
+
 	<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
 	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
 	<script type="text/javascript" src="res/tagmarks-utils.js"></script>
