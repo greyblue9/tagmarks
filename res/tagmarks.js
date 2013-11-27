@@ -67,10 +67,10 @@ var Tagmarks = {
 				return;
 			}
 
-			$('.tag_strip').slideUp(250, 'swing');
+			$('.tag_strip').slideUp(500, 'swing');
 			$('a.thumbnail_link').animate({
 				marginBottom: 0
-			}, 250, 'swing');
+			}, 500, 'swing');
 		},
 
 		showSiteTagIndicators: function(noAnimation) {
@@ -83,8 +83,8 @@ var Tagmarks = {
 
 			$('a.thumbnail_link').animate({
 				marginBottom: '20px'
-			}, 250, 'swing');
-			$('.tag_strip').slideDown(250, 'swing');
+			}, 500, 'swing');
+			$('.tag_strip').slideDown(500, 'swing');
 		},
 
 		siteTagIndicatorsVisible: function() {
@@ -157,6 +157,9 @@ var Tagmarks = {
 						}, 250);
 					});
 
+				$('div.button.action_add_site').click(function() {
+					$('#add_site_dialog').show();
+				});
 
 			});
 		});
