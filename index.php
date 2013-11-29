@@ -1,8 +1,13 @@
 <?php
 
+namespace Tagmarks;
+
 require_once('include/common.inc.php');
 
 header('Content-Type: text/html; charset=utf-8');
+
+
+
 
 ?><!DOCTYPE html>
 <html>

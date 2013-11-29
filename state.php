@@ -1,8 +1,9 @@
 <?php
 
+namespace Tagmarks;
+
 require_once('include/common.inc.php');
-use Tagmarks\Json as Json;
-use Tagmarks\Setup as Setup;
+
 
 Setup::readIniFiles();
 

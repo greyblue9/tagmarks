@@ -1,10 +1,9 @@
 <?php
 
+namespace Tagmarks;
+
 require('include/common.inc.php');
-use Tagmarks\Setup as Setup;
-use Tagmarks\Errors as Errors;
-use Tagmarks\Json as Json;
-use Tagmarks\Common as Common;
+
 
 
 // FirePHP library for FirePHP Firebug extension
