@@ -13,6 +13,8 @@ var Tagmarks = {
 	sites: [],
 	settings: {},
 
+	UploadFrame: null,
+
 	LOGGING_ENABLED: false,
 
 	log: function(obj, severity) {
@@ -110,6 +112,12 @@ var Tagmarks = {
 	init: function() {
 
 		var me = this;
+
+		$('#add_site_dialog iframe').on('load', function() {
+			me.UploadFrame =
+				$('#add_site_dialog iframe').get(0).contentWindow.TagmarksUploadFrame;
+		});
+
 
 		var request = $.ajax({
 			url: 'data.php',
@@ -219,6 +227,12 @@ var Tagmarks = {
 		});
 
 		$('#add_site_dialog').show();
+
+		Tagmarks.UploadFrame.resize();
+	},
+
+	onFileUploaded: function(uploadUri) {
+		alert(uploadUri);
 	},
 
 	dismissAddSiteDialog: function () {

@@ -56,9 +56,15 @@ header('Content-Type: text/html; charset=utf-8');
 					</td>
 				</tr>
 				<tr>
-					<td>Thumbnail URL</td>
+					<td>Thumbnail (from URL):</td>
 					<td>
-						<input type="text" class="thumbnail_url" value="/thumbsets/default/ExampleSite.png" />
+						<input type="text" class="thumbnail_url" value="http://127.0.0.1:85/thumbsets/default/ExampleSite.png" />
+					</td>
+				</tr>
+				<tr>
+					<td>Thumbnail (upload):</td>
+					<td>
+						<iframe src="thumbnail_upload_frame.php"></iframe>
 					</td>
 				</tr>
 				<tr>
