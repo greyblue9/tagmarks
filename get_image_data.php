@@ -80,23 +80,29 @@ if (isset($imageSizeExtraInfo['APP13'])) {
 		'2#120' => 'Caption',
 		'2#122' => 'CaptionWriter'
 	);
-	foreach ($iptc as $origKey => $value) {
-		if (isset($iptcHeaderArray[$origKey])) {
-			$iptc[$iptcHeaderArray[$origKey]] = $value[0];
-		} else {
-			$iptc[$origKey] = $value[0];
+	if (is_array($iptc)) {
+		foreach ($iptc as $origKey => $value) {
+			if (isset($iptcHeaderArray[$origKey])) {
+				$iptc[$iptcHeaderArray[$origKey]] = $value[0];
+			} else {
+				$iptc[$origKey] = $value[0];
+			}
+			unset($iptc[$origKey]);
 		}
-		unset($iptc[$origKey]);
 	}
-
 }
 
 $imagetypeConst = $imageSize[2];
 $mimeType = image_type_to_mime_type($imagetypeConst);
 $extension = image_type_to_extension($imagetypeConst);
 
+$exifData = null;
 $tempfile = file_put_contents('testimage', $contentData);
-$exifData = @exif_read_data('testimage', 'ANY_TAG', true);
+if (function_exists('exif_read_data')) {
+	$exifData = @exif_read_data('testimage', 'ANY_TAG', true);
+} else {
+	$exifData = array('error' => 'PHP exif extension not loaded');
+}
 
 
 $outputArray = array(
@@ -123,7 +129,7 @@ $outputArray = array(
 	'exif' => $exifData? $exifData: null
 );
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 print(Json::formatJson(json_encode($outputArray, JSON_NUMERIC_CHECK)));
 
 

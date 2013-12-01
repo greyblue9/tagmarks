@@ -68,6 +68,12 @@ header('Content-Type: text/html; charset=utf-8');
 					</td>
 				</tr>
 				<tr>
+					<td>Uploaded image</td>
+					<td id="uploaded_image_container">
+						&nbsp;
+					</td>
+				</tr>
+				<tr>
 					<td>Site Tags</td>
 					<td id="add_site_dialog_tags_container"></td>
 				</tr>

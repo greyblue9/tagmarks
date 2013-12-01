@@ -51,7 +51,7 @@ var TagmarksUploadFrame = {
 		me.params = params;
 
 		if ('upload_uri' in params) {
-			parent.document.Tagmarks.onFileUploaded(
+			parent.Tagmarks.onFileUploaded(
 				params['upload_uri']
 			);
 		}

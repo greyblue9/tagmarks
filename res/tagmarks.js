@@ -214,6 +214,11 @@ var Tagmarks = {
 			var $tag = $('<span class="tag" />');
 			var $checkbox = $('<input type="checkbox" />');
 			$checkbox.attr('tag_id_name', tag.id_name);
+
+			if (tagIdx == 0) {
+				$checkbox.attr('checked', 'checked');
+			}
+
 			var $label = $('<span>'+tag.name+'</span>');
 			$tag.append($checkbox);
 			$tag.append($label);
@@ -231,8 +236,58 @@ var Tagmarks = {
 		Tagmarks.UploadFrame.resize();
 	},
 
+	PendingSite: {
+		site: null
+	},
+
 	onFileUploaded: function(uploadUri) {
-		alert(uploadUri);
+		var fullUrl = 'http://'+window.location.host+'/'+uploadUri;
+		$('#uploaded_image_container').text('Getting image information...');
+
+		var handleImageData = function(data) {
+
+			var $dialog = $('#add_site_dialog');
+
+			var site = {
+				name: $.trim($dialog.find('input.site_name').val()),
+				url: $.trim($dialog.find('input.site_url').val()),
+				thumbnail: fullUrl,
+				width: data.dimensions.width,
+				height: data.dimensions.height,
+				mime_type: data.dimensions.mime_type,
+				tags: [Tagmarks.tags[0].name],
+				id: Tagmarks.generateSiteId(),
+				order: 0
+			}
+
+			Tagmarks.PendingSite.site = site;
+
+			Tagmarks.sites.push(site);
+			Tagmarks.renderDials();
+			Tagmarks.onSelectedTagsChanged(true);
+		};
+
+		$.ajax({
+			url: "get_image_data.php",
+			type: "GET",
+			data: {image_url: fullUrl},
+			dataType: 'json',
+			success: function (data, textStatus, jqXHR) {
+				handleImageData(data);
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				Tagmarks.log('get_image_data $.ajax error handler invoked', 'error');
+				Tagmarks.log({
+					jQueryAjaxErrorHandlerArgs: {
+						jqXHR: jqXHR,
+						textStatus: textStatus,
+						errorThrown: errorThrown
+					}
+				}, 'error');
+			}
+		});
+
+		console.log(uploadUri);
 	},
 
 	dismissAddSiteDialog: function () {
@@ -392,7 +447,7 @@ var Tagmarks = {
 		$.ajax({
 			url: "state.php",
 			type: "GET",
-			data: {placeholderVar: 'placeholderVal'},
+			data: {},
 			success: function (data, textStatus, jqXHR) {
 				callback(data);
 			},
