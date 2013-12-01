@@ -85,11 +85,12 @@ var Tagmarks = (function () {
 
 	})();
 
-	var Model = (function() {
+	var Defaults = {
+		ThumbnailSize: {width: 319, height: 179},
+		ThumbsPerRow: 5
+	};
 
-		var Defaults = {
-			ThumbnailSize: {width: 319, height: 179}
-		};
+	var Model = (function() {
 
 		var Sites = (function () {
 
@@ -291,7 +292,18 @@ var Tagmarks = (function () {
 					return state;
 				},
 				save: function () {
-					// TODO: Implement
+					$.ajax({
+						url: 'state.php',
+						type: 'POST',
+						data: JSON.stringify({
+							state: state
+						}),
+						contentType: 'application/json',
+						success: function (data, textStatus, jqXHR) {
+							Logger.log('saveState success', data, 'debug');
+						},
+						error: Logger.jqueryAjaxErrorHandler
+					});
 				}
 			}
 
@@ -337,6 +349,10 @@ var Tagmarks = (function () {
 				$img.attr('title', site.name);
 				$img.disableSelection();
 
+				if ($img.get(0).complete) {
+					$img.trigger('load');
+				}
+
 				var $tagStrip = $('<div class="tag_strip" />');
 				$.each(site.tags, function (tagIdx, tagIdName) {
 
@@ -372,7 +388,7 @@ var Tagmarks = (function () {
 
 		}; // render()
 
-		var renderTags = function (tags, $container) {
+		var renderTags = function (tags, selectedTagsChangedCallback, $container) {
 
 			$container.html('');
 
@@ -404,11 +420,10 @@ var Tagmarks = (function () {
 				// Tag class/color selected toggle
 				$tag.on('click', function () {
 					$tag.trigger('setSelectedState', !$tag.hasClass('selected'));
+					selectedTagsChangedCallback();
 				});
 
 				$tag.on('setSelectedState', function (event, selected) {
-					Logger.log('setSelectedState triggered for tag:', $tag, 'selected:', selected,
-						'debug');
 					if (selected) {
 						$tag.addClass('selected');
 						$tag.css('background-color', $tag.attr('sel_color'));
@@ -428,7 +443,7 @@ var Tagmarks = (function () {
 
 		var Viewport = (function () {
 
-			var MinSitesArea = {
+			var minSitesArea = {
 				width: null,
 				height: null
 			};
@@ -438,18 +453,42 @@ var Tagmarks = (function () {
 			var outerMarginWidth = null;
 
 			var recalculate = function () {
-				Controller.$body.css('overflow', 'scroll');
-				MinSitesArea.width = Controller.$sitesContainer.innerWidth();
-				MinSitesArea.height = Controller.$sitesContainer.height();
+				var $body = $('body');
+				$body.css('overflow', 'scroll');
+				minSitesArea.width = $sitesContainer.innerWidth();
+				minSitesArea.height = $sitesContainer.height();
 
-				Controller.$body.css('overflow', 'auto');
-				outerMarginTotal = Controller.$body.outerWidth(true) - Controller.$body.width();
+				$body.css('overflow', 'auto');
+				outerMarginTotal = $body.outerWidth(true) - $body.width();
 				outerMarginWidth = Math.floor(outerMarginTotal / 2);
 			};
 			
 			return {
 				onResize: function() {
 					recalculate();
+
+					var thumbHorizSep = outerMarginWidth;
+					var $firstRenderedThumb = $('a.thumbnail_link:first');
+					var thumbBorderWidthTotal = $firstRenderedThumb.outerWidth(false) - $firstRenderedThumb.innerWidth();
+
+					var thumbWidth = Math.floor((
+						minSitesArea.width
+							- (thumbBorderWidthTotal * Defaults.ThumbnailSize.width)
+							- (thumbHorizSep * (Defaults.ThumbsPerRow - 1))
+							- (outerMarginWidth * 2)
+						) / Defaults.ThumbsPerRow);
+
+					if (thumbWidth >= Defaults.ThumbnailSize.width) {
+						thumbWidth = Defaults.ThumbnailSize.width;
+					}
+
+					var thumbHeight = (Defaults.ThumbnailSize.height / Defaults.ThumbnailSize.width) * thumbWidth;
+
+					var $thumbnailLinks = $('a.thumbnail_link');
+					$thumbnailLinks.css({
+						width: thumbWidth + 'px',
+						height: thumbHeight + 'px'
+					});
 				}
 			}
 
@@ -556,8 +595,8 @@ var Tagmarks = (function () {
 				}
 			},
 			Tags: {
-				render: function(tags) {
-					renderTags(tags, $tagsContainer);
+				render: function(tags, selectedTagsChangedCallback) {
+					renderTags(tags, selectedTagsChangedCallback, $tagsContainer);
 				}
 			},
 			Dialogs: {
@@ -572,12 +611,19 @@ var Tagmarks = (function () {
 			},
 
 			State: {
-				set: function(selectedTagIds) {
-					Logger.log('View.State.set', 'selectedTagIds=', selectedTagIds, 'debug');
+				set: function(state) {
+					var $sites = $sitesContainer.find('a.thumbnail_link');
+					$sites.hide();
+
 					$tagsContainer.find('.tag').each(function() {
 						var $tag = $(this);
-						var selected = ($.inArray($tag.attr('tag'), selectedTagIds) != -1);
+						var tagId = $tag.attr('tag');
+						var selected = ($.inArray(tagId, state.selectedTagIds) != -1);
 						$tag.trigger('setSelectedState', selected);
+
+						if (selected) {
+							$sites.filter('[tags~="'+tagId+'"]').show();
+						}
 					});
 				},
 				get: function() {
@@ -591,6 +637,8 @@ var Tagmarks = (function () {
 					}
 				}
 			},
+
+			Viewport: Viewport,
 
 			init: function($pSitesContainer, $pTagsContainer) {
 				$sitesContainer = $pSitesContainer;
@@ -722,38 +770,47 @@ var Tagmarks = (function () {
 				error: Logger.jqueryAjaxErrorHandler
 			});
 
+			var onSelectedTagsChanged = function() {
+				var state = View.State.get();
+				Model.State.set(state);
+				View.State.set(state);
+
+				Model.State.save();
+			};
+
 			var onResponseReceived = function() {
 				if (dataResponse === null || stateResponse === null) return;
 
 				// Both responses (data + state) loaded
+				Model.init(dataResponse.settings, dataResponse.sites, dataResponse.tags);
+
+				var state;
+				if ('errorIdName' in stateResponse && stateResponse.errorIdName == 'NoSavedState') {
+					// No saved state
+					state = {
+						selectedTagIds: Model.Tags.getIds()
+					};
+				} else {
+					// Saved state data retrieved
+					state = stateResponse.state;
+				}
+				Model.State.set(state);
+
 				Elements.assign();
 				Elements.setEventHandlers();
 
-				Model.init(dataResponse.settings, dataResponse.sites, dataResponse.tags);
-
-
-				var state = {
-					selectedTagIds: []
-				};
-				if ('errorIdName' in stateResponse && stateResponse.errorIdName == 'NoSavedState') {
-					// No saved state
-					state.selectedTagIds = Model.Tags.getIds();
-				} else {
-					// Saved state data retrieved
-					state.selectedTagIds = stateResponse.selectedTagIds;
-				}
-
-				Model.State.set(state);
-
 				View.init(Elements.$sitesContainer, Elements.$tagsContainer);
 
-				View.Tags.render(Model.Tags.get());
+				View.Tags.render(Model.Tags.get(), onSelectedTagsChanged);
 				View.Sites.render(
 					Model.Sites.get(),
 					Model.Tags.getTagByIdName,
 					Model.Sites.onOrderChanged
 				);
-				View.State.set(Model.State.get().selectedTagIds);
+				View.State.set(Model.State.get());
+
+				$(window).on('resize', View.Viewport.onResize);
+				$(window).trigger('resize');
 
 			};
 		}

@@ -81,9 +81,9 @@ a.thumbnail_link {
 	display: inline-block;
 	position: relative;
 	text-decoration: none;
-	transition: border-color .75s ease-out, transform .4s ease-out, opacity .75s ease-out, box-shadow .75s ease-out;
+	/*transition: border-color .75s ease-out, transform .4s ease-out, opacity .75s ease-out, box-shadow .75s ease-out;
 	transform: scale(0.8, 0.8);
-	opacity: 0;
+	opacity: 0;*/
 	z-index: 0;
 
 	margin: 0 0 20px 0;
