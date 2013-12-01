@@ -8,6 +8,10 @@ header('Content-Type: text/html; charset=utf-8');
 
 
 
+Setup::readIniFiles();
+
+$debugMode = DEBUG_MODE? true: false;
+
 
 ?><!DOCTYPE html>
 <html>
@@ -30,7 +34,7 @@ header('Content-Type: text/html; charset=utf-8');
 		<div id="tag_nav_area"></div>
 
 		<div id="controls_area">
-			<div class="button add_icon action_add_site">
+			<div class="button add_icon add_site">
 				Add Site
 			</div>
 		</div>
@@ -75,15 +79,15 @@ header('Content-Type: text/html; charset=utf-8');
 				</tr>
 				<tr>
 					<td>Site Tags</td>
-					<td id="add_site_dialog_tags_container"></td>
+					<td class="tags_container"></td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
 					<td>
-						<div class="button action_save_new_site">
-							Add Site
+						<div class="button save">
+							Save
 						</div>
-						<div class="button action_cancel_new_site">
+						<div class="button cancel">
 							Cancel
 						</div>
 					</td>
@@ -92,13 +96,23 @@ header('Content-Type: text/html; charset=utf-8');
 		</div>
 	</div>
 
+	<? if ($debugMode): ?>
 
+		<!-- Debug mode (from "debug_mode" in tagmarks.ini.php) -->
+		<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
 
-	<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
-	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
-	<script type="text/javascript" src="res/tagmarks-utils.js"></script>
-	<script type="text/javascript" src="res/tagmarks.js"></script>
+		<script type="text/javascript"
+		        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-utils.js') ?>"></script>
+		<script type="text/javascript"
+		        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks.js') ?>"></script>
 
+	<? else: ?>
+
+		<!-- Debug mode off -->
+		<script type="text/javascript" src="min/g=tagmarks-all.js"></script>
+
+	<? endif; ?>
 
 </body>
 </html>

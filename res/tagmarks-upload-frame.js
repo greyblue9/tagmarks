@@ -2,11 +2,11 @@
 
 $(document).ready(function() {
 
-	TagmarksUploadFrame.init();
+	TagmarksUploader.init();
 
 });
 
-var TagmarksUploadFrame = {
+var TagmarksUploader = {
 
 	iframe: null,
 	$iframe: null,
@@ -15,7 +15,7 @@ var TagmarksUploadFrame = {
 	LOGGING_ENABLED: false,
 
 	log: function (obj, severity) {
-		if (TagmarksUploadFrame.LOGGING_ENABLED === true) {
+		if (TagmarksUploader.LOGGING_ENABLED === true) {
 			if (typeof severity === 'string' && severity == 'error') {
 				console.error(obj);
 			} else {
@@ -26,7 +26,7 @@ var TagmarksUploadFrame = {
 
 	init: function() {
 
-		var me = TagmarksUploadFrame;
+		var me = TagmarksUploader;
 
 		var arrFrames = parent.document.getElementsByTagName("IFRAME");
 		for (var i = 0; i < arrFrames.length; i++) {
@@ -60,7 +60,7 @@ var TagmarksUploadFrame = {
 
 	resize: function() {
 
-		var me = TagmarksUploadFrame;
+		var me = TagmarksUploader;
 		var height = $('body').outerHeight();
 		me.$iframe.css('height', height+'px');
 

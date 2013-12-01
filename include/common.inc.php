@@ -28,6 +28,8 @@ class Setup {
 
 		define('JSON_INDENTED_OUTPUT', $inidata['json_indented_output']);
 
+		define('DEBUG_MODE', $inidata['debug_mode']);
+
 	}
 
 	private static function iniMerge($config_ini, $custom_ini)
@@ -354,6 +356,13 @@ class Common {
 		}
 
 		return $bytes;
+	}
+
+	static function getFilenameWithModifiedTime($file)
+	{
+		$mtime = filemtime($file);
+
+		return $file.'?lastmod='.$mtime;
 	}
 
 }

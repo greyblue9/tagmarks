@@ -44,3 +44,4 @@ bypass_secure_vars = 0
 
 json_indented_output = 0
 
+debug_mode = 0

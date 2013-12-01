@@ -69,8 +69,7 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 
 </form>
 
-<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
-<script type="text/javascript" src="res/tagmarks-upload-frame.js?_=<?= time() ?>"></script>
+<script type="text/javascript" src="min/g=tagmarks-all.js"></script>
 
 </body>
 </html>
