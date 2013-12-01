@@ -148,20 +148,16 @@ var Tagmarks = (function () {
 				});
 			};
 
-			var onRearranged = function () {
-
-			};
-
 			var generateId = function () {
 				return Math.floor(Math.random() * 89999999) + 10000000;
 			};
 
 			var save = function () {
 				$.ajax({
-					url: "state.php",
-					type: "POST",
+					url: 'state.php',
+					type: 'POST',
 					data: JSON.stringify({
-						sites: Tagmarks.sites
+						sites: sites
 					}),
 					contentType: 'application/json',
 					success: function (data, textStatus, jqXHR) {
@@ -181,9 +177,6 @@ var Tagmarks = (function () {
 				},
 				save: function () {
 					save();
-				},
-				onOrderChanged: function() {
-					onRearranged();
 				}
 			}
 
@@ -210,12 +203,7 @@ var Tagmarks = (function () {
 				});
 			};
 
-			var updateTagSelections = function () {
-
-			};
-
 			var tagsById = null; // Lazy-loaded first time getTagsByIdNames() is called
-
 
 			/**
 			 * Get object mapping all tag id_names to tag entries
@@ -592,6 +580,16 @@ var Tagmarks = (function () {
 			Sites: {
 				render: function(sites, tagsByIdFunc, siteOrderChangedCallback) {
 					renderSites(sites, tagsByIdFunc, siteOrderChangedCallback, $sitesContainer);
+				},
+
+				getSiteIdsByOnscreenOrder: function() {
+					var siteIdsOrdered = [];
+					$sitesContainer.find('a.thumbnail_link').each(function(idx, siteElement) {
+						var $site = $(siteElement);
+						var siteId = $site.attr('site_id');
+						siteIdsOrdered.push(siteId);
+					});
+					return siteIdsOrdered;
 				}
 			},
 			Tags: {
@@ -778,6 +776,27 @@ var Tagmarks = (function () {
 				Model.State.save();
 			};
 
+			var onSiteOrderChanged = function() {
+				var siteIdsByOnscreenOrder = View.Sites.getSiteIdsByOnscreenOrder();
+
+				var sites = Model.Sites.get();
+
+				var orderByNumericSiteId = {};
+				$.each(siteIdsByOnscreenOrder, function(orderIdx, siteId) {
+					orderByNumericSiteId[Number(siteId)] = orderIdx;
+				});
+
+				$.each(sites, function(siteIdx, site) {
+					var siteOrderIdx = orderByNumericSiteId[site.id];
+					site.order = siteOrderIdx;
+				});
+
+				Model.Sites.set(sites);
+				Model.Sites.save();
+
+				Logger.log('New site order', 'siteIdsByOnscreenOrder:', siteIdsByOnscreenOrder, 'debug');
+			};
+
 			var onResponseReceived = function() {
 				if (dataResponse === null || stateResponse === null) return;
 
@@ -805,7 +824,7 @@ var Tagmarks = (function () {
 				View.Sites.render(
 					Model.Sites.get(),
 					Model.Tags.getTagByIdName,
-					Model.Sites.onOrderChanged
+					onSiteOrderChanged
 				);
 				View.State.set(Model.State.get());
 
