@@ -1,8 +1,10 @@
 
 
-$(document).ready(function() {
+$(document).ready(function () {
 
-	TagmarksUploader.init();
+	if ($('html').attr('page') == 'tagmarks_upload_frame') {
+		TagmarksUploader.init();
+	}
 
 });
 

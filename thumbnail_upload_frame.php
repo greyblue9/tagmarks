@@ -1,7 +1,16 @@
 <?php
 
+namespace Tagmarks;
+
+require_once('include/common.inc.php');
 
 header('Content-Type: text/html; charset=utf-8');
+
+
+
+Setup::readIniFiles();
+
+$debugMode = DEBUG_MODE? true: false;
 
 
 if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
@@ -30,7 +39,7 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 
 
 ?><!doctype html>
-<html>
+<html page="thumbnail_upload_frame">
 <head>
 	<title>Thumbnail Upload Frame</title>
 	<style type="text/css">
@@ -69,7 +78,27 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 
 </form>
 
-<script type="text/javascript" src="min/g=tagmarks-all.js"></script>
+
+<? if ($debugMode): ?>
+
+	<!-- Debug mode (from "debug_mode" in tagmarks.ini.php) -->
+	<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
+	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
+
+	<script type="text/javascript"
+	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-utils.js') ?>"></script>
+	<script type="text/javascript"
+	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks.js') ?>"></script>
+	<script type="text/javascript"
+	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-upload-frame.js') ?>"></script>
+
+<? else: ?>
+
+	<!-- Debug mode off -->
+	<script type="text/javascript" src="min/g=tagmarks-all.js"></script>
+
+<? endif; ?>
+
 
 </body>
 </html>

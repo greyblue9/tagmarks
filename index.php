@@ -14,7 +14,7 @@ $debugMode = DEBUG_MODE? true: false;
 
 
 ?><!DOCTYPE html>
-<html>
+<html page="index">
 <head>
 	<title>TagMarks</title>
 	<link rel="shortcut icon" href="res/img/favicon.ico" />
