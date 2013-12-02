@@ -431,40 +431,38 @@ var Tagmarks = (function () {
 
 		var Viewport = (function () {
 
-			var minSitesArea = {
-				width: null,
-				height: null
-			};
-
-			// calculated from CSS
 			var outerMarginTotal = null;
 			var outerMarginWidth = null;
+			var thumbnailSepSize = null;
+			var sitesContainerMinWidth = null; // size limited by scrollbar
 
 			var recalculate = function () {
 				var $body = $('body');
 				$body.css('overflow', 'scroll');
-				minSitesArea.width = $sitesContainer.innerWidth();
-				minSitesArea.height = $sitesContainer.height();
+				sitesContainerMinWidth = $sitesContainer.innerWidth();
 
 				$body.css('overflow', 'auto');
 				outerMarginTotal = $body.outerWidth(true) - $body.width();
 				outerMarginWidth = Math.floor(outerMarginTotal / 2);
+				thumbnailSepSize = outerMarginWidth;
 			};
-			
+
 			return {
 				onResize: function() {
 					recalculate();
 
-					var thumbHorizSep = outerMarginWidth;
 					var $firstRenderedThumb = $('a.thumbnail_link:first');
 					var thumbBorderWidthTotal = $firstRenderedThumb.outerWidth(false) - $firstRenderedThumb.innerWidth();
 
-					var thumbWidth = Math.floor((
-						minSitesArea.width
+					var thumbWidth = Math.floor(
+						(
+							sitesContainerMinWidth
 							- (thumbBorderWidthTotal * Defaults.ThumbnailSize.width)
-							- (thumbHorizSep * (Defaults.ThumbsPerRow - 1))
+							- (thumbnailSepSize * (Defaults.ThumbsPerRow - 1))
 							- (outerMarginWidth * 2)
-						) / Defaults.ThumbsPerRow);
+						)
+						/ Defaults.ThumbsPerRow
+					);
 
 					if (thumbWidth >= Defaults.ThumbnailSize.width) {
 						thumbWidth = Defaults.ThumbnailSize.width;
@@ -655,9 +653,9 @@ var Tagmarks = (function () {
 
 			Viewport: Viewport,
 
-			init: function($pSitesContainer, $pTagsContainer) {
-				$sitesContainer = $pSitesContainer;
-				$tagsContainer = $pTagsContainer;
+			init: function() {
+				$sitesContainer = $('#center');
+				$tagsContainer = $('#tag_nav_area');
 			}
 		}
 
@@ -665,111 +663,127 @@ var Tagmarks = (function () {
 
 
 
-	var Uploader = (function () {
-		var window = null;
-		var $iframe = null;
-		var TagmarksUploader = null;
 
-		return {
-			window: window,
-			$iframe: $iframe,
-			UploadFrame: TagmarksUploader
-		};
-	})();
 
-	var Elements = {
-		Dialogs: {
-			AddSite: {
-				$dialog: null,
-				$uploadIframe: null,
-				$cancel: null,
-				$save: null
-			}
-		},
-		Buttons: {
-			$addSite: null
-		},
-		$body: null,
-		$tagsContainer: null,
-		$sitesContainer: null,
+	var setButtonEventHandlers = function() {
 
-		assign: function () {
-			Elements.Buttons.$addSite = $('#left .button.add_site');
+		var $addSiteDialog = $('#add_site_dialog');
+		var $controlsArea = $('#controls_area');
 
-			Elements.Dialogs.AddSite.$dialog = $('#add_site_dialog');
-			Elements.Dialogs.AddSite.$uploadIframe = Elements.Dialogs.AddSite.$dialog.find('iframe');
-			Elements.Dialogs.AddSite.$cancel = Elements.Dialogs.AddSite.$dialog.find('.button.cancel');
-			Elements.Dialogs.AddSite.$save = Elements.Dialogs.AddSite.$dialog.find('.button.save');
+		$addSiteDialog.find('.button.cancel').on('click', function () {
+			View.Dialogs.AddSite.dismiss();
+		});
 
-			Elements.$body = $('body');
-			Elements.$tagsContainer = $('#tag_nav_area');
-			Elements.$sitesContainer = $('#center');
-		},
+		$addSiteDialog.find('.button.save').on('click', function () {
+			var siteName = View.Dialogs.AddSite.getSiteName();
+			var siteUrl = View.Dialogs.AddSite.getSiteName();
+			var siteTagIds = View.Dialogs.AddSite.getSiteTagIds();
+			var siteThumbnailUrl = View.Dialogs.AddSite.getSiteThumbnailUrl();
 
-		setEventHandlers: function () {
+			// TODO: Add new site to model (should trigger save)
+		});
 
-			Elements.Dialogs.AddSite.$uploadIframe.on('load', function () {
-				Uploader.$iframe = $(this);
-				Uploader.window = Uploader.$iframe.get(0).contentWindow;
-				Uploader.UploadFrame = Uploader.window.TagmarksUploadFrame;
-			});
-
-			Elements.Dialogs.AddSite.$cancel.on('click', function () {
-				View.Dialogs.AddSite.dismiss();
-			});
-
-			Elements.Dialogs.AddSite.$save.on('click', function () {
-				var siteName = View.Dialogs.AddSite.getSiteName();
-				var siteUrl = View.Dialogs.AddSite.getSiteName();
-				var siteTagIds = View.Dialogs.AddSite.getSiteTagIds();
-				var siteThumbnailUrl = View.Dialogs.AddSite.getSiteThumbnailUrl();
-
-				// TODO: Add new site to model (should trigger save)
-			});
-
-			Elements.Buttons.$addSite.on('click', function () {
-				View.Dialogs.AddSite.show(
-					Model.Tags.get(),
-					function () {
-						Uploader.UploadFrame.resize();
-					}
-				);
-			});
-
-		}
+		$controlsArea.find('.button.add_site').on('click', function () {
+			View.Dialogs.AddSite.show(
+				Model.Tags.get(),
+				function() {
+					$addSiteDialog.find('iframe').get(0).contentWindow.TagmarksUploadFrame.resize();
+				}
+			);
+		});
 	};
 
+	var onSelectedTagsChanged = function () {
+		var state = View.State.get();
+		Model.State.set(state);
+		View.State.set(state);
 
+		Model.State.save();
+	};
+
+	var onSiteOrderChanged = function () {
+		var siteIdsByOnscreenOrder = View.Sites.getSiteIdsByOnscreenOrder();
+
+		var sites = Model.Sites.get();
+
+		var orderByNumericSiteId = {};
+		$.each(siteIdsByOnscreenOrder, function (orderIdx, siteId) {
+			orderByNumericSiteId[Number(siteId)] = orderIdx;
+		});
+
+		$.each(sites, function (siteIdx, site) {
+			var siteOrderIdx = orderByNumericSiteId[site.id];
+			site.order = siteOrderIdx;
+		});
+
+		Model.Sites.set(sites);
+		Model.Sites.save();
+
+		Logger.log('New site order', 'siteIdsByOnscreenOrder:',
+			siteIdsByOnscreenOrder, 'debug');
+	};
+
+	var onResponseReceived = function (response, whichResponse) {
+
+		if (whichResponse == 'dataResponse' || whichResponse == 'stateResponse') {
+			this[whichResponse] = response;
+		}
+
+		if (!('dataResponse' in this) || !('stateResponse' in this)) return;
+
+		var dataResponse = this['dataResponse'];
+		var stateResponse = this['stateResponse'];
+
+		// Both responses (data + state) loaded
+		Model.init(dataResponse.settings, dataResponse.sites, dataResponse.tags);
+
+		var state;
+		if ('errorIdName' in stateResponse && stateResponse.errorIdName == 'NoSavedState') {
+			// No saved state
+			state = {
+				selectedTagIds: Model.Tags.getIds()
+			};
+		} else {
+			// Saved state data retrieved
+			state = stateResponse.state;
+		}
+		Model.State.set(state);
+
+		setButtonEventHandlers();
+
+		View.init();
+
+		View.Tags.render(Model.Tags.get(), onSelectedTagsChanged);
+		View.Sites.render(Model.Sites.get(), Model.Tags.getTagByIdName,
+			onSiteOrderChanged);
+		View.State.set(Model.State.get());
+
+		$(window).on('resize', View.Viewport.onResize);
+		$(window).trigger('resize');
+	};
+
+	// Tagmarks public interface
 	return {
-		Model: {
-			Sites: {
-				get: Model.Sites.get
-			},
-			Tags: {
-				get: Model.Tags.get
-			},
-			Settings: {
-				get: Model.Settings.get
-			},
-			State: {
-				get: Model.State.get
-			}
+		getSites: function() {
+			return Model.Sites.get();
+		},
+		getTags: function() {
+			return Model.Tags.get();
+		},
+		getSettings: function() {
+			return Model.Settings.get();
+		},
+		getState: function() {
+			return Model.State.get();
 		},
 
-		/**
-		 * Called by upload iframe
-		 * @param object uploadInfo
-		 */
-		onUploadReceived: function(uploadInfo) {
+		// Called from upload iframe when iframe loads POST response
+		handleUpload: function(uploadInfo) {
 			Logger.log('Upload received from iframe', 'uploadInfo:', uploadInfo, 'debug');
-
 			View.Dialogs.AddSite.setSelectedImage(uploadInfo.upload_url);
 		},
 
 		init: function () {
-
-			var dataResponse = null;
-			var stateResponse = null;
 
 			$.ajax({
 				url: 'data.php',
@@ -777,8 +791,7 @@ var Tagmarks = (function () {
 				data: {format: 'json'},
 				dataType: 'json',
 				success: function (response) {
-					dataResponse = response;
-					onResponseReceived();
+					onResponseReceived(response, 'dataResponse');
 				},
 				error: Logger.jqueryAjaxErrorHandler
 			});
@@ -788,75 +801,11 @@ var Tagmarks = (function () {
 				type: 'GET',
 				data: {},
 				success: function(response) {
-					stateResponse = response;
-					onResponseReceived();
+					onResponseReceived(response, 'stateResponse');
 				},
 				error: Logger.jqueryAjaxErrorHandler
 			});
 
-			var onSelectedTagsChanged = function() {
-				var state = View.State.get();
-				Model.State.set(state);
-				View.State.set(state);
-
-				Model.State.save();
-			};
-
-			var onSiteOrderChanged = function() {
-				var siteIdsByOnscreenOrder = View.Sites.getSiteIdsByOnscreenOrder();
-
-				var sites = Model.Sites.get();
-
-				var orderByNumericSiteId = {};
-				$.each(siteIdsByOnscreenOrder, function(orderIdx, siteId) {
-					orderByNumericSiteId[Number(siteId)] = orderIdx;
-				});
-
-				$.each(sites, function(siteIdx, site) {
-					var siteOrderIdx = orderByNumericSiteId[site.id];
-					site.order = siteOrderIdx;
-				});
-
-				Model.Sites.set(sites);
-				Model.Sites.save();
-
-				Logger.log('New site order', 'siteIdsByOnscreenOrder:', siteIdsByOnscreenOrder, 'debug');
-			};
-
-			var onResponseReceived = function() {
-				if (dataResponse === null || stateResponse === null) return;
-
-				// Both responses (data + state) loaded
-				Model.init(dataResponse.settings, dataResponse.sites, dataResponse.tags);
-
-				var state;
-				if ('errorIdName' in stateResponse && stateResponse.errorIdName == 'NoSavedState') {
-					// No saved state
-					state = {
-						selectedTagIds: Model.Tags.getIds()
-					};
-				} else {
-					// Saved state data retrieved
-					state = stateResponse.state;
-				}
-				Model.State.set(state);
-
-				Elements.assign();
-				Elements.setEventHandlers();
-
-				View.init(Elements.$sitesContainer, Elements.$tagsContainer);
-
-				View.Tags.render(Model.Tags.get(), onSelectedTagsChanged);
-				View.Sites.render(
-					Model.Sites.get(),
-					Model.Tags.getTagByIdName,
-					onSiteOrderChanged
-				);
-				View.State.set(Model.State.get());
-
-				$(window).on('resize', View.Viewport.onResize);
-				$(window).trigger('resize');
-			};
 		}
 	}
 

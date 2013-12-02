@@ -50,7 +50,7 @@ var TagmarksUploadFrame = {
 		var uploadInfo = $.parseJSON(uploadInfoJson);
 
 		if (!$.isEmptyObject(uploadInfo)) {
-			parent.Tagmarks.onUploadReceived(uploadInfo);
+			parent.Tagmarks.handleUpload(uploadInfo);
 		}
 
 	},
