@@ -11,6 +11,14 @@ $(document).ready(function () {
 
 var Tagmarks = (function () {
 
+	var htmlEntities = function(str) {
+		return String(str)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;');
+	};
+
 	var Logger = (function () {
 		var LOGGING_ENABLED = true;
 
@@ -355,6 +363,9 @@ var Tagmarks = (function () {
 
 				});
 
+				var $label = $('<span class="label"><span>'+ htmlEntities(site.name)+'</span></span>');
+				$a.append($label);
+
 				$a.append($img);
 				$a.append($tagStrip);
 
@@ -436,6 +447,14 @@ var Tagmarks = (function () {
 			var thumbnailSepSize = null;
 			var sitesContainerMinWidth = null; // size limited by scrollbar
 
+			var windowInnerHeight = null;
+			var windowInnerHeight_last = null;
+			var availHeightChangeTotal = 0;
+			var timeoutActive = false;
+
+			var onFindOpenedCallback = null;
+			var onFindDismissedCallback = null;
+
 			var recalculate = function () {
 				var $body = $('body');
 				$body.css('overflow', 'scroll');
@@ -445,6 +464,37 @@ var Tagmarks = (function () {
 				outerMarginTotal = $body.outerWidth(true) - $body.width();
 				outerMarginWidth = Math.floor(outerMarginTotal / 2);
 				thumbnailSepSize = outerMarginWidth;
+
+				windowInnerHeight_last = windowInnerHeight;
+				windowInnerHeight = $(window).innerHeight();
+				var availHeightChange;
+				if (windowInnerHeight_last === null) {
+					availHeightChange = 0;
+				} else {
+					availHeightChange = windowInnerHeight - windowInnerHeight_last;
+				}
+				availHeightChangeTotal += availHeightChange;
+				if (!timeoutActive) {
+					timeoutActive = true;
+					setTimeout(function() {
+						availHeightChangeTotal = 0;
+						timeoutActive = false;
+					}, 1500);
+				}
+				// Firefox find bar was 31px on my machine
+
+				Logger.log('availHeightChangeTotal', availHeightChangeTotal, 'debug');
+				if (availHeightChangeTotal >= 29 && availHeightChangeTotal <= 33) {
+					// Firefox "find" bar dismissed
+					if (typeof onFindDismissedCallback == 'function') {
+						onFindDismissedCallback();
+					}
+				} else if (availHeightChangeTotal >= -33 && availHeightChangeTotal <= -29) {
+					// Firefox "find" bar opened
+					if (typeof onFindOpenedCallback == 'function') {
+						onFindOpenedCallback();
+					}
+				}
 			};
 
 			return {
@@ -475,6 +525,11 @@ var Tagmarks = (function () {
 						width: thumbWidth + 'px',
 						height: thumbHeight + 'px'
 					});
+				},
+
+				setFindTextBarCallbacks: function(findOpenedCallback, findDismissedCallback) {
+					onFindOpenedCallback = findOpenedCallback;
+					onFindDismissedCallback = findDismissedCallback;
 				}
 			}
 
@@ -690,6 +745,23 @@ var Tagmarks = (function () {
 					$addSiteDialog.find('iframe').get(0).contentWindow.TagmarksUploadFrame.resize();
 				}
 			);
+		});
+
+		var findStarted = function() {
+			$('body').addClass('searching');
+		};
+		var findStopped = function() {
+			$('body').removeClass('searching');
+		};
+		View.Viewport.setFindTextBarCallbacks(findStarted, findStopped);
+
+		$(window).on('keydown', function (e) {
+			var ck = e.keyCode ? e.keyCode : e.which;
+			if (e.ctrlKey && ck == 70) { // Ctrl+F
+				findStarted();
+			} else if (ck == 27) { // Escape key
+				findStopped();
+			}
 		});
 	};
 

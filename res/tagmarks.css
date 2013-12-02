@@ -100,6 +100,32 @@ a.thumbnail_link:hover {
 	opacity: 1.0 !important;
 }
 
+a.thumbnail_link > span.label {
+	color: #FFFFFF;
+	display: block;
+	left: 0;
+	line-height: 100%;
+	margin: 0 auto;
+	position: absolute;
+	text-align: center;
+	top: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+body.searching a.thumbnail_link > span.label {
+	z-index: 10000;
+}
+
+a.thumbnail_link > span.label > span{
+	background: rgba(0, 0, 0, 0.6);
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
+	display: inline-block;
+	padding: 2px 4px;
+	position: relative;
+	top: 2px;
+}
+
 a.thumbnail_link > img {
 	border: 0 none;
 	display: block;
