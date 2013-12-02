@@ -29,7 +29,7 @@ var Tagmarks = (function () {
 			 * @var string logType Log type/severity (last argument)
 			 */
 			log: function () {
-				if (LOGGING_ENABLED !== true) return;
+				if (LOGGING_ENABLED !== true || typeof console != 'object') return;
 
 				var argsArray = $.makeArray(arguments);
 				var logItems = argsArray.slice(0, argsArray.length - 1);
@@ -536,8 +536,17 @@ var Tagmarks = (function () {
 
 			AddSite: (function () {
 
+				var $dialog = null;
+
+				var onDialogSizeChanged = function() {
+					$dialog.css('margin-top',
+						(0 - Math.floor($dialog.height() / 2)) + 'px');
+				};
+
 				return {
-					show: function ($dialog, tags, resizeUploadIframeCallback) {
+					show: function (tags, resizeUploadIframeCallback) {
+
+						$dialog = $('#add_site_dialog');
 
 						var $tagsContainer = $dialog.find('.tags_container');
 						$tagsContainer.html('');
@@ -564,11 +573,28 @@ var Tagmarks = (function () {
 						});
 
 						$dialog.show();
+
 						resizeUploadIframeCallback();
+						onDialogSizeChanged();
 					},
 
-					dismiss: function ($dialog) {
+					dismiss: function () {
 						$dialog.hide();
+					},
+
+					setSelectedImage: function(imageUrl) {
+						var $selectedImageContainer = $('#current_thumbnail_container');
+						$selectedImageContainer.html('');
+
+						var $img = $('<img />');
+						$img.attr('src', imageUrl);
+						$img.css('max-width', Defaults.ThumbnailSize.width);
+						$img.css('max-height', Defaults.ThumbnailSize.height);
+						$img.on('load', onDialogSizeChanged);
+
+						$selectedImageContainer.append($img);
+
+						if ($img.get(0).complete) $img.trigger('load');
 					}
 				}
 
@@ -597,16 +623,7 @@ var Tagmarks = (function () {
 					renderTags(tags, selectedTagsChangedCallback, $tagsContainer);
 				}
 			},
-			Dialogs: {
-				AddSite: {
-					show: function($dialog, tags, resizeUploadIframeCallback) {
-						Dialogs.AddSite.show($dialog, tags, resizeUploadIframeCallback);
-					},
-					dismiss: function() {
-						Dialogs.AddSite.dismiss();
-					}
-				}
-			},
+			Dialogs: Dialogs,
 
 			State: {
 				set: function(state) {
@@ -656,7 +673,7 @@ var Tagmarks = (function () {
 		return {
 			window: window,
 			$iframe: $iframe,
-			TagmarksUploader: TagmarksUploader
+			UploadFrame: TagmarksUploader
 		};
 	})();
 
@@ -694,7 +711,7 @@ var Tagmarks = (function () {
 			Elements.Dialogs.AddSite.$uploadIframe.on('load', function () {
 				Uploader.$iframe = $(this);
 				Uploader.window = Uploader.$iframe.get(0).contentWindow;
-				Uploader.TagmarksUploader = Uploader.window.TagmarksUploader;
+				Uploader.UploadFrame = Uploader.window.TagmarksUploadFrame;
 			});
 
 			Elements.Dialogs.AddSite.$cancel.on('click', function () {
@@ -712,10 +729,9 @@ var Tagmarks = (function () {
 
 			Elements.Buttons.$addSite.on('click', function () {
 				View.Dialogs.AddSite.show(
-					Elements.Dialogs.AddSite.$dialog,
 					Model.Tags.get(),
 					function () {
-						Uploader.TagmarksUploader.resize();
+						Uploader.UploadFrame.resize();
 					}
 				);
 			});
@@ -738,6 +754,16 @@ var Tagmarks = (function () {
 			State: {
 				get: Model.State.get
 			}
+		},
+
+		/**
+		 * Called by upload iframe
+		 * @param object uploadInfo
+		 */
+		onUploadReceived: function(uploadInfo) {
+			Logger.log('Upload received from iframe', 'uploadInfo:', uploadInfo, 'debug');
+
+			View.Dialogs.AddSite.setSelectedImage(uploadInfo.upload_url);
 		},
 
 		init: function () {
@@ -830,7 +856,6 @@ var Tagmarks = (function () {
 
 				$(window).on('resize', View.Viewport.onResize);
 				$(window).trigger('resize');
-
 			};
 		}
 	}

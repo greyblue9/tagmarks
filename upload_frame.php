@@ -13,15 +13,19 @@ Setup::readIniFiles();
 $debugMode = DEBUG_MODE? true: false;
 
 
+$uploadInfo = array();
+
+
 if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 	$fileInfo = $_FILES['thumbnail_file_upload'];
 	$tempFilename = $fileInfo['tmp_name']; // full path to temporary (uploaded) file
+	$filesizeBytes = $fileInfo['size'];
 
 	$sizeInfo = getimagesize($tempFilename);
 	$mime = image_type_to_mime_type($sizeInfo[2]);
 	if (!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
 		unlink($tempFilename);
-		header('Location: thumbnail_upload_frame.php?error=unsupported_mime');
+		header('Location: upload_frame.php?error=unsupported_mime');
 		exit;
 	}
 
@@ -33,13 +37,20 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 	$newFilename = 'thumbsets/uploaded/'.uniqid('uploaded_thumb_').$ext;
 	$result = move_uploaded_file($tempFilename, $newFilename);
 
-	header('Location: thumbnail_upload_frame.php?upload_uri='.urlencode($newFilename));
-	exit;
+	$uploadInfo = array(
+		'upload_uri' => $newFilename,
+		'upload_url' => 'http://'.$_SERVER['HTTP_HOST'].'/'.$newFilename,
+		'width' => $sizeInfo[0],
+		'height' => $sizeInfo[1],
+		'mime_type' => $mime,
+		'extension' => image_type_to_extension($sizeInfo[2], false),
+		'size_bytes' => $filesizeBytes
+	);
 }
 
 
 ?><!doctype html>
-<html page="thumbnail_upload_frame">
+<html page="upload_frame">
 <head>
 	<title>Thumbnail Upload Frame</title>
 	<style type="text/css">
@@ -66,7 +77,7 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 <body>
 
 
-<form autocomplete="off" enctype="multipart/form-data" method="POST" action="thumbnail_upload_frame.php">
+<form autocomplete="off" enctype="multipart/form-data" method="POST" action="upload_frame.php">
 
 	<input type="file" name="thumbnail_file_upload" style="width: 75%; float: left; padding: 0px;">
 
@@ -77,6 +88,8 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 	<div style="clear: both"></div>
 
 </form>
+
+<input type="hidden" id="upload_info" value="<?= htmlentities(json_encode($uploadInfo, JSON_NUMERIC_CHECK)) ?>" />
 
 
 <? if ($debugMode): ?>

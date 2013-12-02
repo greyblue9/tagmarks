@@ -167,7 +167,6 @@ a.thumbnail_link > div.tag_strip > div.clear {
 	display: none;
 
 	left: 50%;
-	height: 400px;
 	z-index: 1000;
 	position: fixed;
 	top: 50%;

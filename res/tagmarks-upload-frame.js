@@ -2,33 +2,29 @@
 
 $(document).ready(function () {
 
-	if ($('html').attr('page') == 'tagmarks_upload_frame') {
-		TagmarksUploader.init();
+	if ($('html').attr('page') == 'upload_frame') {
+		TagmarksUploadFrame.init();
 	}
 
 });
 
-var TagmarksUploader = {
+var TagmarksUploadFrame = {
 
 	iframe: null,
 	$iframe: null,
 	params: null,
 
-	LOGGING_ENABLED: false,
+	LOGGING_ENABLED: true,
 
-	log: function (obj, severity) {
-		if (TagmarksUploader.LOGGING_ENABLED === true) {
-			if (typeof severity === 'string' && severity == 'error') {
-				console.error(obj);
-			} else {
-				console.log(obj);
-			}
+	log: function () {
+		if (TagmarksUploadFrame.LOGGING_ENABLED === true && typeof console == 'object') {
+			console.log.apply(console, arguments);
 		}
 	},
 
 	init: function() {
 
-		var me = TagmarksUploader;
+		var me = TagmarksUploadFrame;
 
 		var arrFrames = parent.document.getElementsByTagName("IFRAME");
 		for (var i = 0; i < arrFrames.length; i++) {
@@ -37,8 +33,6 @@ var TagmarksUploader = {
 				me.$iframe = $(me.iframe);
 			}
 		}
-
-		me.log(me.iframe);
 
 		var qstring = document.location.search;
 		var params = {};
@@ -52,17 +46,18 @@ var TagmarksUploader = {
 
 		me.params = params;
 
-		if ('upload_uri' in params) {
-			parent.Tagmarks.onFileUploaded(
-				params['upload_uri']
-			);
+		var uploadInfoJson = $('#upload_info').val();
+		var uploadInfo = $.parseJSON(uploadInfoJson);
+
+		if (!$.isEmptyObject(uploadInfo)) {
+			parent.Tagmarks.onUploadReceived(uploadInfo);
 		}
 
 	},
 
 	resize: function() {
 
-		var me = TagmarksUploader;
+		var me = TagmarksUploadFrame;
 		var height = $('body').outerHeight();
 		me.$iframe.css('height', height+'px');
 
