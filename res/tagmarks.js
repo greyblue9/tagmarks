@@ -325,7 +325,7 @@ var Tagmarks = (function () {
 		var $sitesContainer = null;
 		var $tagsContainer = null;
 
-		var renderSites = function (sites, tagsByIdFunc, siteOrderChangedCallback, $container) {
+		var renderSites = function (sites, tagsByIdFunc, siteOrderChangedCallback, removeSiteCallback, $container) {
 
 			$container.html('');
 			$.each(sites, function (siteIdx, site) {
@@ -364,9 +364,21 @@ var Tagmarks = (function () {
 				});
 
 				var $label = $('<span class="label"><span>'+ htmlEntities(site.name)+'</span></span>');
-				$a.append($label);
+				var $controls = $(''
+					+'<div class="controls">'
+					+'  <div class="remove">&nbsp;</div>'
+					+'  <div class="edit">&nbsp;</div>'
+					+'</div>'
+				);
+
+				$controls.find('> .remove').on('click', function(event) {
+					event.preventDefault();
+					View.Dialogs.RemoveSite.show($a, site, removeSiteCallback);
+				});
 
 				$a.append($img);
+				$a.append($label);
+				$a.append($controls);
 				$a.append($tagStrip);
 
 				$container.append($a);
@@ -587,7 +599,20 @@ var Tagmarks = (function () {
 
 		var Dialogs = {
 
-			AddSite: (function () {
+			RemoveSite: (function() {
+				return {
+					show: function($a, site, removeSiteCallback) {
+						var result = confirm("Are you sure you want to remove this site?\n\n"
+							+site.name);
+						if (result) {
+							$a.remove();
+							removeSiteCallback(site);
+						}
+					}
+				}
+			})(),
+
+			AddEditSite: (function () {
 
 				var $dialog = null;
 
@@ -597,7 +622,12 @@ var Tagmarks = (function () {
 				};
 
 				return {
-					show: function (tags, resizeUploadIframeCallback) {
+					/**
+					 * @param tags
+					 * @param resizeUploadIframeCallback
+					 * @param {object} site [optional]
+					 */
+					show: function (tags, resizeUploadIframeCallback, site) {
 
 						$dialog = $('#add_site_dialog');
 
@@ -657,8 +687,8 @@ var Tagmarks = (function () {
 
 		return {
 			Sites: {
-				render: function(sites, tagsByIdFunc, siteOrderChangedCallback) {
-					renderSites(sites, tagsByIdFunc, siteOrderChangedCallback, $sitesContainer);
+				render: function(sites, tagsByIdFunc, siteOrderChangedCallback, removeSiteCallback) {
+					renderSites(sites, tagsByIdFunc, siteOrderChangedCallback, removeSiteCallback, $sitesContainer);
 				},
 
 				getSiteIdsByOnscreenOrder: function() {
@@ -726,20 +756,20 @@ var Tagmarks = (function () {
 		var $controlsArea = $('#controls_area');
 
 		$addSiteDialog.find('.button.cancel').on('click', function () {
-			View.Dialogs.AddSite.dismiss();
+			View.Dialogs.AddEditSite.dismiss();
 		});
 
 		$addSiteDialog.find('.button.save').on('click', function () {
-			var siteName = View.Dialogs.AddSite.getSiteName();
-			var siteUrl = View.Dialogs.AddSite.getSiteName();
-			var siteTagIds = View.Dialogs.AddSite.getSiteTagIds();
-			var siteThumbnailUrl = View.Dialogs.AddSite.getSiteThumbnailUrl();
+			var siteName = View.Dialogs.AddEditSite.getSiteName();
+			var siteUrl = View.Dialogs.AddEditSite.getSiteName();
+			var siteTagIds = View.Dialogs.AddEditSite.getSiteTagIds();
+			var siteThumbnailUrl = View.Dialogs.AddEditSite.getSiteThumbnailUrl();
 
 			// TODO: Add new site to model (should trigger save)
 		});
 
 		$controlsArea.find('.button.add_site').on('click', function () {
-			View.Dialogs.AddSite.show(
+			View.Dialogs.AddEditSite.show(
 				Model.Tags.get(),
 				function() {
 					$addSiteDialog.find('iframe').get(0).contentWindow.TagmarksUploadFrame.resize();
@@ -795,6 +825,19 @@ var Tagmarks = (function () {
 			siteIdsByOnscreenOrder, 'debug');
 	};
 
+	var removeSiteCallback = function(siteToRemove) {
+		var sites = Model.Sites.get();
+		$.each(sites, function(siteIdx, site) {
+			if (site == siteToRemove) {
+				sites.splice(siteIdx, 1);
+				return false;
+			}
+		});
+
+		Model.Sites.set(sites);
+		Model.Sites.save();
+	};
+
 	var onResponseReceived = function (response, whichResponse) {
 
 		if (whichResponse == 'dataResponse' || whichResponse == 'stateResponse') {
@@ -827,7 +870,7 @@ var Tagmarks = (function () {
 
 		View.Tags.render(Model.Tags.get(), onSelectedTagsChanged);
 		View.Sites.render(Model.Sites.get(), Model.Tags.getTagByIdName,
-			onSiteOrderChanged);
+			onSiteOrderChanged, removeSiteCallback);
 		View.State.set(Model.State.get());
 
 		$(window).on('resize', View.Viewport.onResize);
@@ -852,7 +895,7 @@ var Tagmarks = (function () {
 		// Called from upload iframe when iframe loads POST response
 		handleUpload: function(uploadInfo) {
 			Logger.log('Upload received from iframe', 'uploadInfo:', uploadInfo, 'debug');
-			View.Dialogs.AddSite.setSelectedImage(uploadInfo.upload_url);
+			View.Dialogs.AddEditSite.setSelectedImage(uploadInfo.upload_url);
 		},
 
 		init: function () {

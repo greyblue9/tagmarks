@@ -136,6 +136,44 @@ a.thumbnail_link > img {
 	width: 100%;
 }
 
+a.thumbnail_link > div.controls {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 56px;
+	height: 24px;
+	z-index: 1000;
+	padding: 4px;
+	display: none;
+}
+
+a.thumbnail_link:hover > div.controls {
+	display: block;
+}
+
+a.thumbnail_link > div.controls > div {
+	float: right;
+	width: 24px;
+	height: 24px;
+	overflow: hidden;
+	background: #fff;
+	opacity: 0.5;
+	cursor: pointer;
+}
+
+a.thumbnail_link > div.controls > div:hover {
+	opacity: 1;
+}
+
+a.thumbnail_link > div.controls > div.remove {
+	background: url(img/remove_icon.png) no-repeat 0 0;
+}
+
+a.thumbnail_link > div.controls > div.edit {
+	background: url(img/edit_icon.png) no-repeat 0 0;
+	margin-right: 8px;
+}
+
 a.thumbnail_link > div.tag_strip {
 	color: #ffffff;
 	font-family: Roboto, sans-serif;
