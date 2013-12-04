@@ -328,7 +328,7 @@ class Common {
 	/**
 	 * This script accepts a long value representing a number of bytes, and it outputs the appropriate file size unit.
 	 *
-	 * @link http://www.phpshare.org/scripts/Format-Size-Units
+	 * @link http://www.phpshare.org/js/Format-Size-Units
 	 * @author Added on August 2, 2007 by Zhay. Zhay accreditted the script to himself.
 	 * @note DBR 2013-11-29 Modified 'KB' to 'kB' in accordance with SI convention
 	 * @param int $bytes Byte size of file

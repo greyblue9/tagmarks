@@ -91,27 +91,7 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 
 <input type="hidden" id="upload_info" value="<?= htmlentities(json_encode($uploadInfo, JSON_NUMERIC_CHECK)) ?>" />
 
-
-<? if ($debugMode): ?>
-
-	<!-- Debug mode (from "debug_mode" in tagmarks.ini.php) -->
-	<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
-	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
-
-	<script type="text/javascript"
-	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-utils.js') ?>"></script>
-	<script type="text/javascript"
-	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks.js') ?>"></script>
-	<script type="text/javascript"
-	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-upload-frame.js') ?>"></script>
-
-<? else: ?>
-
-	<!-- Debug mode off -->
-	<script type="text/javascript" src="min/g=tagmarks-all.js"></script>
-
-<? endif; ?>
-
+<? /* TODO: insert required js for upload frame */ ?>
 
 </body>
 </html>

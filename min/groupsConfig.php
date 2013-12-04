@@ -13,8 +13,8 @@
 
 return array(
 	'tagmarks-all.js' => array(
-		'//res/jquery-2.0.3.min.js',
-		'//res/jquery-ui-1.10.3.custom.min.js',
+		'//res/jquery-2.0.3.min.js.old',
+		'//res/jquery-ui-1.10.3.custom.min.js.old',
 		'//res/tagmarks.js',
 		'//res/tagmarks-utils.js',
 		'//res/tagmarks-upload-frame.js'

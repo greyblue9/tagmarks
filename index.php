@@ -17,7 +17,7 @@ $debugMode = DEBUG_MODE? true: false;
 <html page="index">
 <head>
 	<title>TagMarks</title>
-	<link rel="shortcut icon" href="res/img/favicon.ico" />
+	<link rel="shortcut icon" href="res/images/favicon.ico" />
 	<link rel="stylesheet" href="res/tagmarks.css" />
 </head>
 
@@ -96,23 +96,34 @@ $debugMode = DEBUG_MODE? true: false;
 		</div>
 	</div>
 
-	<? if ($debugMode): ?>
 
-		<!-- Debug mode (from "debug_mode" in tagmarks.ini.php) -->
-		<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
-		<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
 
-		<script type="text/javascript"
-		        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-utils.js') ?>"></script>
-		<script type="text/javascript"
-		        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks.js') ?>"></script>
+	<!--
+	<script type="text/javascript" data-main="res/main.js" src="res/require.js"></script>
+	<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
+	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
 
-	<? else: ?>
+	<script type="text/javascript"
+	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-utils.js') ?>"></script>
+	<script type="text/javascript"
+	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks.js') ?>"></script>
+	-->
 
-		<!-- Debug mode off -->
-		<script type="text/javascript" src="min/g=tagmarks-all.js"></script>
+	<!--
+	<script type="text/javascript" src="min/g=tagmarks-all.js"></script>
+	-->
 
-	<? endif; ?>
+
+	<script type="text/javascript" data-main="js/main.js" src="js/lib/require.js"></script>
+
+
+	<script type="text/x-tmpl" id="tmpl-site">
+		<div class="templated_site">
+			<h1>{%=o.name%}</h1>
+			<div>Site URL: <a href="{%=o.url%}">{%=o.url%}</a></div>
+			<div>Thumbnail: <img src="{%=o.thumbnail%}" /></div>
+		</div>
+	</script>
 
 </body>
 </html>

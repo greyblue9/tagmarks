@@ -23,8 +23,8 @@ if (! class_exists('Minify_Loader', false)) {
  * <link rel="stylesheet" type="text/css" href="<?= Minify_getUri('css'); ?>" />
  * <script src="<?= Minify_getUri('js'); ?>"></script>
  * <script src="<?= Minify_getUri(array(
- *      '//scripts/file1.js'
- *      ,'//scripts/file2.js'
+ *      '//js/file1.js'
+ *      ,'//js/file2.js'
  * )); ?>"></script>
  * </code>
  *
