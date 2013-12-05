@@ -211,25 +211,21 @@ var Tagmarks = (function () {
 				});
 			};
 
-			var tagsById = null; // Lazy-loaded first time getTagsByIdNames() is called
+			var tagsById = {}; // Lazy-loaded first time getTagsByIdNames() is called
 
 			/**
 			 * Get object mapping all tag id_names to tag entries
 			 */
 			var getTagsByIdNames = function () {
-				if (tagsById === null) {
-					tagsById = {};
-					$.each(tags, function (tagIdx, tag) {
-						tagsById[tag.id_name] = tag;
-					});
-				}
-
 				return tagsById;
 			};
 
 			return {
 				set: function (tagsData) {
 					tags = tagsData;
+					$.each(tags, function(idx, tag) {
+						tagsById[tag.id_name] = tag;
+					});
 					sort();
 				},
 				get: function () {
@@ -244,11 +240,11 @@ var Tagmarks = (function () {
 					// TODO: Implement
 				},
 				getTagByIdName: function (tagIdName) {
-					if (tagIdName in getTagsByIdNames()) {
-						return getTagsByIdNames()[tagIdName];
+					if (tagIdName in tagsById) {
+						return tagsById[tagIdName];
 					} else {
-						Logger.log('Tag not found with id_name: "' + tagIdName + '"',
-							'error');
+						//Logger.log('Tag not found with id_name: "' + tagIdName + '"',
+						//	'error');
 						return {};
 					}
 				}
