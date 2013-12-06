@@ -8,7 +8,6 @@ html {
 }
 
 body {
-	position: relative;
 	color: white;
 	margin: 0;
 	padding: 0;
@@ -69,7 +68,110 @@ body > #left .tag.selected:hover {
 	box-shadow: 0 0 8px #777;
 }
 
+#web_search_bar {
+	background: url("img/web_search_bg.png") repeat-x scroll 0 0 rgba(0, 0, 0, 0);
+	height: 75px;
+	left: 0;
+	line-height: 75px;
+	margin-left: 190px;
+	overflow: visible;
+	position: absolute;
+	text-align: center;
+	top: 0;
+	vertical-align: middle;
+	width: 10px;
+	z-index: 1000;
+}
+
+#web_search_bar form {
+	display: block;
+	border: 0 none;
+	margin: 0;
+	padding: 0;
+}
+
+
+
+#web_search_bar a.google_logo,
+#web_search_bar span.google_logo_rigtside_balancer {
+	width: 96px;
+	height: 36px;
+	margin: 0 16px;
+	overflow: hidden;
+}
+
+#web_search_bar a.google_logo {
+	display: inline-block;
+	vertical-align: middle;
+	background: url(img/google_small_white.png) no-repeat 0 0;
+	cursor: pointer;
+	user-select: none;
+	border: 0 none;
+	text-decoration: none;
+	margin-left: 0;
+}
+
+#web_search_bar span.google_logo_rigtside_balancer {
+	display: inline-block;
+	margin-right: 0;
+}
+
+#web_search_bar input[type=text] {
+	width: 561px; /* 570 - 9 */
+	height: 28px;
+	padding-left: 9px;
+	font-size: 17px;
+	font-family: Arial, sans-serif;
+	line-height: 28px;
+	border: 1px solid #4285f4;
+	color: #000;
+	text-align: left;
+}
+
+#web_search_bar span.suggestions_pixel {
+	display: inline-block;
+	height: 0;
+	left: 4px;
+	overflow: visible;
+	position: relative;
+	text-align: left;
+	top: 13px;
+	vertical-align: middle;
+	width: 0;
+}
+
+#web_search_bar span.suggestions_pixel > #web_search_suggestions {
+	display: none;
+
+	background: none repeat scroll 0 0 #FFFFFF;
+	border: 1px solid #AAAAAA;
+	box-shadow: 0 3px 3px #777777;
+	color: #000000;
+	font-family: Arial, sans-serif;
+	font-size: 17px;
+	left: 0;
+	line-height: 20px;
+	position: absolute;
+	top: 0;
+	width: 570px;
+}
+
+#web_search_bar span.suggestions_pixel > #web_search_suggestions > div {
+	height: 22px;
+	line-height: 22px;
+	padding-left: 7px;
+}
+
+#web_search_bar span.suggestions_pixel > #web_search_suggestions > div.selected {
+	background: rgb(239, 239, 239);
+}
+
+#web_search_bar span.suggestions_pixel > #web_search_suggestions > div > span {
+	font-weight: bold;
+}
+
 body > #center {
+	margin-top: 75px;
 	margin-left: 190px;
 	overflow: auto;
 	line-height: 0;

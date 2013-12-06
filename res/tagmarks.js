@@ -533,6 +533,11 @@ var Tagmarks = (function () {
 						width: thumbWidth + 'px',
 						height: thumbHeight + 'px'
 					});
+
+					var $sitesContainer = $('#center');
+
+					var $webSearchBar = $('#web_search_bar');
+					$webSearchBar.css('width', $sitesContainer.width()+'px');
 				},
 
 				setFindTextBarCallbacks: function(findOpenedCallback, findDismissedCallback) {
@@ -789,6 +794,86 @@ var Tagmarks = (function () {
 				findStopped();
 			}
 		});
+
+		var $webSearchBar = $('#web_search_bar');
+		var $webSearchInput = $webSearchBar.find('input[type=text]');
+		$webSearchInput.val('').focus().select();
+		var $suggestions = $('#web_search_suggestions');
+
+		var lastQuery = '';
+		var KEYCODE_UP = 38;
+		var KEYCODE_DOWN = 40;
+		var KEYCODE_ENTER = 13;
+		var selSearchIdx = 0;
+
+		$webSearchInput.on('keyup', function(e) {
+			if (e.keyCode == KEYCODE_UP || e.keyCode == KEYCODE_DOWN || e.keyCode == KEYCODE_ENTER) return;
+			var q = $.trim($(this).val());
+
+			if (typeof q !== 'string' || q.length < 1) return;
+			if (q == lastQuery) return;
+
+			selSearchIdx = 0;
+
+			lastQuery = q;
+
+			$.ajax({
+				url: 'search_suggestions.php',
+				type: 'GET',
+				data: {q: q},
+				dataType: 'json',
+				success: function(response) {
+					if (typeof response == 'object' && 'length' in response) {
+
+						$suggestions.html('');
+						$.each(response, function(idx, item) {
+							var $suggestion = $('<div><span>'+htmlEntities(item.substr(0, q.length))+'</span>'+htmlEntities(item.substr(q.length))+'</div>');
+							$suggestions.append($suggestion);
+						});
+
+						$suggestions.show();
+					} else {
+						$suggestions.hide();
+					}
+				},
+				error: Logger.jqueryAjaxErrorHandler
+			});
+		});
+
+
+
+		$webSearchInput.on('keyup', function(e) {
+
+			if (e.keyCode == KEYCODE_DOWN) {
+				selSearchIdx++;
+			} else if (e.keyCode == KEYCODE_UP) {
+				if (selSearchIdx > 0) {
+					selSearchIdx--;
+				}
+			} else if (e.keyCode == KEYCODE_ENTER) {
+				return;
+			}
+
+			if (e.keyCode == KEYCODE_DOWN || e.keyCode == KEYCODE_UP) {
+				$suggestions.find('div.selected').removeClass('selected');
+
+				if (selSearchIdx > 0) {
+					var $selItem = $suggestions.find('div:nth-child(' + selSearchIdx + ')');
+					if ($selItem.length) {
+						$selItem.addClass('selected');
+						var itemText = $selItem.text();
+						$webSearchInput.val(itemText);
+						$webSearchInput.get(0).selectionStart = itemText.length;
+						$webSearchInput.get(0).selectionEnd = itemText.length;
+					} else {
+						selSearchIdx = 0;
+					}
+				}
+			}
+
+		});
+
+
 	};
 
 	var onSelectedTagsChanged = function () {

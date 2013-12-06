@@ -22,11 +22,13 @@ $debugMode = DEBUG_MODE? true: false;
 </head>
 
 <body>
+
 	<div id="center">
 
 		&nbsp;
 
 	</div>
+
 	<div id="left_bg">&nbsp;</div>
 	<div id="left">
 		<div style="height: 20px; overflow: hidden;">&nbsp;</div>
@@ -38,6 +40,28 @@ $debugMode = DEBUG_MODE? true: false;
 				Add Site
 			</div>
 		</div>
+	</div>
+
+	<div id="web_search_bar">
+		<form autocomplete="off" method="get" action="https://www.google.com/search">
+			<a class="google_logo" href="http://www.google.com/"
+			   alt="Google Search" title="Google Search">&nbsp;</a>
+
+				<span class="suggestions_pixel">
+				    <div id="web_search_suggestions">
+					    <div>hello</div>
+					    <div>hello</div>
+					    <div>hello</div>
+					    <div>hello</div>
+					    <div>hello</div>
+					    <div>hello</div>
+				    </div>
+				</span>
+
+			<input type="text" tabindex="0" value="" name="q" />
+
+			<span class="google_logo_rigtside_balancer">&nbsp;</span>
+		</form>
 	</div>
 
 
