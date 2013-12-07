@@ -7,13 +7,6 @@ require_once('include/common.inc.php');
 
 Setup::readIniFiles();
 
-if (CACHE_LEVEL == 'production') {
-	header('Cache-Control: max-age=3600;public');
-}
-else {
-	header('Cache-Control: no-cache');
-}
-
 define('STATE_FILE', 'state.dat');
 
 

@@ -1,23 +1,10 @@
 <?php
 
-namespace Tagmarks;
-
-require_once('include/common.inc.php');
 
 header('Content-Type: text/html; charset=utf-8');
 
 
 
-Setup::readIniFiles();
-
-if (CACHE_LEVEL == 'production') {
-	header('Cache-Control: max-age=3600;public');
-}
-else {
-	header('Cache-Control: no-cache');
-}
-
-$debugMode = DEBUG_MODE? true: false;
 
 
 ?><!DOCTYPE html>
@@ -36,7 +23,7 @@ $debugMode = DEBUG_MODE? true: false;
 
 	</div>
 
-	<div id="left_bg">&nbsp;</div>
+
 	<div id="left">
 		<div style="height: 20px; overflow: hidden;">&nbsp;</div>
 
@@ -130,21 +117,13 @@ $debugMode = DEBUG_MODE? true: false;
 		</div>
 	</div>
 
-	<? if ($debugMode): ?>
 
-		<!-- Debug mode (from "debug_mode" in tagmarks.ini.php) -->
-		<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
-		<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
+	<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
+	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
 
-		<script type="text/javascript" src="res/tagmarks-utils.js"></script>
-		<script type="text/javascript" src="res/tagmarks.js"></script>
+	<script type="text/javascript" src="res/tagmarks-utils.js"></script>
+	<script type="text/javascript" src="res/tagmarks.js"></script>
 
-	<? else: ?>
-
-		<!-- Debug mode off -->
-		<script type="text/javascript" src="min/g=tagmarks-all.js"></script>
-
-	<? endif; ?>
 
 </body>
 </html>

@@ -63,13 +63,6 @@ if ($method == 'POST') {
 
 } else if ($method == 'GET') {
 
-	if (CACHE_LEVEL == 'production') {
-		header('Cache-Control: max-age=3600;private');
-	}
-	else {
-		header('Cache-Control: no-cache');
-	}
-
 	// load datafile
 	if (!file_exists(MAIN_DATA_FILEPATH)) {
 		Errors::exitWithFatalError(

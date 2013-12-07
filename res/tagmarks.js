@@ -318,8 +318,8 @@ var Tagmarks = (function () {
 
 	var View = (function () {
 
-		var $sitesContainer = null;
-		var $tagsContainer = null;
+		var $sitesContainer = $('#center');
+		var $tagsContainer = $('#tag_nav_area');
 
 		var renderSites = function (sites, tagsByIdFunc, siteOrderChangedCallback, removeSiteCallback, $container) {
 
@@ -337,6 +337,8 @@ var Tagmarks = (function () {
 				$a.disableSelection();
 
 				var $img = $('<img />');
+
+
 				$img.attr('src', site.thumbnail);
 				$img.attr('title', site.name);
 				$img.disableSelection();
@@ -344,6 +346,7 @@ var Tagmarks = (function () {
 				if ($img.get(0).complete) {
 					$img.trigger('load');
 				}
+
 
 				var $tagStrip = $('<div class="tag_strip" />');
 				$.each(site.tags, function (tagIdx, tagIdName) {
@@ -378,6 +381,7 @@ var Tagmarks = (function () {
 				$a.append($tagStrip);
 
 				$container.append($a);
+
 			});
 
 			$container.sortable({
@@ -395,7 +399,7 @@ var Tagmarks = (function () {
 
 		}; // render()
 
-		var renderTags = function (tags, selectedTagsChangedCallback, $container) {
+		var renderTags = function (tags, selectedTagIds, selectedTagsChangedCallback, $container) {
 
 			$container.html('');
 
@@ -440,10 +444,13 @@ var Tagmarks = (function () {
 					}
 				});
 
-				$tag.trigger('setSelectedState', false);
+
+				$tag.trigger('setSelectedState', $.inArray(tag.id_name, selectedTagIds) !== -1? true: false);
 
 				// Insert tag into container element (dials container)
 				$container.append($tag);
+
+
 
 			});
 		};
@@ -537,6 +544,7 @@ var Tagmarks = (function () {
 
 					var $webSearchBar = $('#web_search_bar');
 					$webSearchBar.css('width', $sitesContainer.width()+'px');
+					$webSearchBar.css('overflow', 'visible');
 				},
 
 				setFindTextBarCallbacks: function(findOpenedCallback, findDismissedCallback) {
@@ -715,15 +723,15 @@ var Tagmarks = (function () {
 				}
 			},
 			Tags: {
-				render: function(tags, selectedTagsChangedCallback) {
-					renderTags(tags, selectedTagsChangedCallback, $tagsContainer);
+				render: function(tags, selectedTagIds, selectedTagsChangedCallback) {
+					renderTags(tags, selectedTagIds, selectedTagsChangedCallback, $tagsContainer);
 				}
 			},
 			Dialogs: Dialogs,
 
 			State: {
 				set: function(state) {
-					var $sites = $sitesContainer.find('a.thumbnail_link');
+					var $sites = $('a.thumbnail_link');
 					$sites.hide();
 
 					$tagsContainer.find('.tag').each(function() {
@@ -752,8 +760,7 @@ var Tagmarks = (function () {
 			Viewport: Viewport,
 
 			init: function() {
-				$sitesContainer = $('#center');
-				$tagsContainer = $('#tag_nav_area');
+
 			}
 		}
 
@@ -837,6 +844,8 @@ var Tagmarks = (function () {
 			$webSearchForm.submit();
 		}
 
+		var google204Fetched = false;
+
 		$webSearchInput.on('keyup', function(e) {
 			if (e.keyCode == KEYCODE_UP || e.keyCode == KEYCODE_DOWN || e.keyCode == KEYCODE_ENTER) return;
 			var q = $.trim($(this).val());
@@ -871,6 +880,14 @@ var Tagmarks = (function () {
 
 
 						$suggestions.show();
+
+
+						if (!google204Fetched) {
+							google204Fetched = true;
+							(new Image).src =
+								'https://clients1.google.com/generate_204';
+						}
+
 					} else {
 						$suggestions.hide();
 					}
@@ -880,7 +897,7 @@ var Tagmarks = (function () {
 		});
 
 
-		var google204Fetched = false;
+
 
 		$webSearchInput.on('keyup', function(e) {
 
@@ -892,11 +909,6 @@ var Tagmarks = (function () {
 				}
 			} else if (e.keyCode == KEYCODE_ENTER) {
 				return;
-			}
-
-			if (!google204Fetched) {
-				google204Fetched = true;
-				(new Image).src = 'https://clients1.google.com/generate_204';
 			}
 
 			if (e.keyCode == KEYCODE_DOWN || e.keyCode == KEYCODE_UP) {
@@ -966,41 +978,43 @@ var Tagmarks = (function () {
 
 	var onResponseReceived = function (response, whichResponse) {
 
-		if (whichResponse == 'dataResponse' || whichResponse == 'stateResponse') {
-			this[whichResponse] = response;
+		if (whichResponse == 'dataResponse') {
+
+
+			Model.init(response.settings, response.sites, response.tags);
+
+			View.init();
+
+			View.Tags.render(Model.Tags.get(), Model.State.get().selectedTagIds, onSelectedTagsChanged);
+			View.Sites.render(Model.Sites.get(), Model.Tags.getTagByIdName,
+				onSiteOrderChanged, removeSiteCallback);
+
+			$(window).on('resize', View.Viewport.onResize);
+			$(window).trigger('resize');
+
+			setButtonEventHandlers();
+
 		}
 
-		if (!('dataResponse' in this) || !('stateResponse' in this)) return;
+		if (whichResponse == 'stateResponse') {
 
-		var dataResponse = this['dataResponse'];
-		var stateResponse = this['stateResponse'];
+			var state;
+			if ('errorIdName' in response && response.errorIdName == 'NoSavedState') {
+				// No saved state
+				state = {
+					selectedTagIds: Model.Tags.getIds()
+				};
+			} else {
+				// Saved state data retrieved
+				state = response.state;
+			}
+			Model.State.set(state);
+			View.State.set(Model.State.get());
 
-		// Both responses (data + state) loaded
-		Model.init(dataResponse.settings, dataResponse.sites, dataResponse.tags);
-
-		var state;
-		if ('errorIdName' in stateResponse && stateResponse.errorIdName == 'NoSavedState') {
-			// No saved state
-			state = {
-				selectedTagIds: Model.Tags.getIds()
-			};
-		} else {
-			// Saved state data retrieved
-			state = stateResponse.state;
 		}
-		Model.State.set(state);
 
-		setButtonEventHandlers();
 
-		View.init();
 
-		View.Tags.render(Model.Tags.get(), onSelectedTagsChanged);
-		View.Sites.render(Model.Sites.get(), Model.Tags.getTagByIdName,
-			onSiteOrderChanged, removeSiteCallback);
-		View.State.set(Model.State.get());
-
-		$(window).on('resize', View.Viewport.onResize);
-		$(window).trigger('resize');
 	};
 
 	// Tagmarks public interface

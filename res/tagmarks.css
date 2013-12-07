@@ -15,19 +15,9 @@ body {
 	font-family: sans-serif;
 }
 
-body > #left_bg {
-	position: fixed;
-	left: 0;
-	top: 0;
-	width: 190px;
-	height: 100%;
-	background: black;
-	opacity: 0.4;
-	overflow: hidden;
-	z-index: 0;
-}
 
 body > #left {
+	background: rgba(0, 0, 0, 0.4);
 	position: fixed;
 	left: 0;
 	top: 0;
@@ -47,7 +37,7 @@ body > #left .tag {
 	cursor: pointer;
 	border: 2px solid transparent;
 	user-select: none;
-	opacity: 0.3;
+	opacity: 0.4;
 }
 
 body > #left .tag.selected {
@@ -74,12 +64,12 @@ body > #left .tag.selected:hover {
 	left: 0;
 	line-height: 75px;
 	margin-left: 190px;
-	overflow: visible;
+	overflow: hidden;
 	position: absolute;
 	text-align: center;
 	top: 0;
 	vertical-align: middle;
-	width: 10px;
+	width: 0;
 	z-index: 1000;
 }
 
