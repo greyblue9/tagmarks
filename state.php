@@ -7,6 +7,12 @@ require_once('include/common.inc.php');
 
 Setup::readIniFiles();
 
+if (CACHE_LEVEL == 'production') {
+	header('Cache-Control: max-age=3600;public');
+}
+else {
+	header('Cache-Control: no-cache');
+}
 
 define('STATE_FILE', 'state.dat');
 
@@ -27,34 +33,6 @@ function saveState($stateData) {
 		'save_file' => STATE_FILE,
 		'save_file_realpath' => realpath(STATE_FILE),
 		'save_bytes_attempted' => strlen($stateDataJson),
-		'save_bytes_written' => intval($bytesWrittenOrFalse),
-		'save_failure' => $bytesWrittenOrFalse === false,
-		'save_succeeded' => $saveSucceeded,
-		'result' => $saveSucceeded
-	);
-
-}
-
-
-function saveSites($sites)
-{
-	$mainDataJson = file_get_contents(MAIN_DATA_FILEPATH);
-	$mainData = Json::decodeOrOutputError($mainDataJson, 'json');
-
-	$mainData['sites'] = $sites;
-	$mainDataJson = json_encode($mainData, JSON_NUMERIC_CHECK);
-
-	$bytesWrittenOrFalse = file_put_contents(MAIN_DATA_FILEPATH, Json::formatJson($mainDataJson));
-	$saveSucceeded =
-		$bytesWrittenOrFalse !== false &&
-		$bytesWrittenOrFalse === strlen($mainDataJson);
-
-	return array(
-		'server_action' => 'save_state',
-		'site_count' => count($sites),
-		'save_file' => MAIN_DATA_FILEPATH,
-		'save_file_realpath' => realpath(MAIN_DATA_FILEPATH),
-		'save_bytes_attempted' => strlen($mainDataJson),
 		'save_bytes_written' => intval($bytesWrittenOrFalse),
 		'save_failure' => $bytesWrittenOrFalse === false,
 		'save_succeeded' => $saveSucceeded,
@@ -109,8 +87,6 @@ if ($method == 'POST') {
 
 	if (isset($postData['state'])) {
 		$responseArray = saveState($postData['state']);
-	} else if (isset($postData['sites'])) {
-		$responseArray = saveSites($postData['sites']);
 	} else {
 		$responseArray = array(
 			'error' => true,

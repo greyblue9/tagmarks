@@ -33,6 +33,7 @@ bypass_secure_vars = 1
 json_indented_output = 0
 
 debug_mode = 1
+cache_level = production
 
 
 

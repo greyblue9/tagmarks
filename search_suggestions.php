@@ -4,11 +4,11 @@
 
 $query = $_GET['q'];
 
-$url = 'http://www.google.com/complete/search?hl=en-US&q='.urlencode($query).'&client=ie8&inputencoding=UTF-8&outputencoding=UTF-8';
+$client = 'ie8'; // using now for compatibility; doesn't work with custom value?
+$url = 'http://www.google.com/complete/search?hl=en-US&q='.urlencode($query).'&client='.$client.'&inputencoding=UTF-8&outputencoding=UTF-8';
 
 
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko'));
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_VERBOSE, 1);

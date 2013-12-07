@@ -10,6 +10,13 @@ header('Content-Type: text/html; charset=utf-8');
 
 Setup::readIniFiles();
 
+if (CACHE_LEVEL == 'production') {
+	header('Cache-Control: max-age=86400;public');
+}
+else {
+	header('Cache-Control: no-cache');
+}
+
 $debugMode = DEBUG_MODE? true: false;
 
 

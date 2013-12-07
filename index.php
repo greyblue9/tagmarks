@@ -10,6 +10,13 @@ header('Content-Type: text/html; charset=utf-8');
 
 Setup::readIniFiles();
 
+if (CACHE_LEVEL == 'production') {
+	header('Cache-Control: max-age=3600;public');
+}
+else {
+	header('Cache-Control: no-cache');
+}
+
 $debugMode = DEBUG_MODE? true: false;
 
 
@@ -43,24 +50,29 @@ $debugMode = DEBUG_MODE? true: false;
 	</div>
 
 	<div id="web_search_bar">
-		<form autocomplete="off" method="get" action="https://www.google.com/search">
-			<a class="google_logo" href="http://www.google.com/"
+		<form id="web_search_form" autocomplete="off" method="get" action="https://www.google.com/search">
+			<a class="google_logo" href="https://www.google.com/"
 			   alt="Google Search" title="Google Search">&nbsp;</a>
 
 				<span class="suggestions_pixel">
 				    <div id="web_search_suggestions">
 					    <div>hello</div>
-					    <div>hello</div>
-					    <div>hello</div>
-					    <div>hello</div>
-					    <div>hello</div>
-					    <div>hello</div>
+					    <div>world</div>
 				    </div>
 				</span>
 
 			<input type="text" tabindex="0" value="" name="q" />
 
 			<span class="google_logo_rigtside_balancer">&nbsp;</span>
+
+			<input type="hidden" name="ie" value="utf-8" />
+			<input type="hidden" name="oe" value="utf-8" />
+
+			<input type="hidden" name="aq" value="t" />
+			<input type="hidden" name="rls" value="1.0-alpha" />
+			<input type="hidden" name="client" value="tagmarks-web-search" />
+
+			<input type="hidden" name="num" value="10" />
 		</form>
 	</div>
 
@@ -91,9 +103,7 @@ $debugMode = DEBUG_MODE? true: false;
 				</tr>
 				<tr>
 					<td>Thumbnail (upload):</td>
-					<td>
-						<iframe src="upload_frame.php"></iframe>
-					</td>
+					<td id="upload_frame_container">&nbsp;</td>
 				</tr>
 				<tr>
 					<td>Chosen thumbnail</td>
@@ -126,10 +136,8 @@ $debugMode = DEBUG_MODE? true: false;
 		<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
 		<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
 
-		<script type="text/javascript"
-		        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-utils.js') ?>"></script>
-		<script type="text/javascript"
-		        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks.js') ?>"></script>
+		<script type="text/javascript" src="res/tagmarks-utils.js"></script>
+		<script type="text/javascript" src="res/tagmarks.js"></script>
 
 	<? else: ?>
 

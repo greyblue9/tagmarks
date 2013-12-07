@@ -162,7 +162,7 @@ var Tagmarks = (function () {
 
 			var save = function () {
 				$.ajax({
-					url: 'state.php',
+					url: 'data.php',
 					type: 'POST',
 					data: JSON.stringify({
 						sites: sites
@@ -491,7 +491,6 @@ var Tagmarks = (function () {
 				}
 				// Firefox find bar was 31px on my machine
 
-				Logger.log('availHeightChangeTotal', availHeightChangeTotal, 'debug');
 				if (availHeightChangeTotal >= 29 && availHeightChangeTotal <= 33) {
 					// Firefox "find" bar dismissed
 					if (typeof onFindDismissedCallback == 'function') {
@@ -658,8 +657,21 @@ var Tagmarks = (function () {
 
 						$dialog.show();
 
-						resizeUploadIframeCallback();
-						onDialogSizeChanged();
+						var $iframeContainer = $('upload_frame_container');
+						var $iframe = $iframeContainer.find('> iframe');
+						if (!$iframe.length) {
+							$iframe = $('<iframe src="upload_frame.php" />');
+							$iframe.on('load', function() {
+								resizeUploadIframeCallback();
+								onDialogSizeChanged();
+							});
+						} else {
+							resizeUploadIframeCallback();
+							onDialogSizeChanged();
+						}
+
+
+
 					},
 
 					dismiss: function () {
@@ -798,6 +810,7 @@ var Tagmarks = (function () {
 		var $webSearchBar = $('#web_search_bar');
 		var $webSearchInput = $webSearchBar.find('input[type=text]');
 		$webSearchInput.val('').focus().select();
+		var $webSearchForm = $('#web_search_form');
 		var $suggestions = $('#web_search_suggestions');
 
 		var lastQuery = '';
@@ -805,6 +818,24 @@ var Tagmarks = (function () {
 		var KEYCODE_DOWN = 40;
 		var KEYCODE_ENTER = 13;
 		var selSearchIdx = 0;
+
+		var onSuggestionMouseenter = function($event) {
+			var $suggestion = $($event.target);
+			$suggestion.siblings().filter('.selected').removeClass('selected');
+			$suggestion.addClass('selected');
+		};
+
+		var onSuggestionMouseleave = function($event) {
+			var $suggestion = $($event.target);
+			$suggestion.removeClass('selected');
+		};
+
+		var onSuggestionClick = function($event) {
+			var $suggestion = $($event.target);
+			var clickedItemQuery = $suggestion.attr('q');
+			$webSearchInput.val(clickedItemQuery);
+			$webSearchForm.submit();
+		}
 
 		$webSearchInput.on('keyup', function(e) {
 			if (e.keyCode == KEYCODE_UP || e.keyCode == KEYCODE_DOWN || e.keyCode == KEYCODE_ENTER) return;
@@ -828,8 +859,16 @@ var Tagmarks = (function () {
 						$suggestions.html('');
 						$.each(response, function(idx, item) {
 							var $suggestion = $('<div><span>'+htmlEntities(item.substr(0, q.length))+'</span>'+htmlEntities(item.substr(q.length))+'</div>');
+							$suggestion.attr('q', item);
 							$suggestions.append($suggestion);
+
+							$suggestion.on('mouseenter',
+								onSuggestionMouseenter);
+							$suggestion.on('mouseleave', onSuggestionMouseleave);
+							$suggestion.on('click', onSuggestionClick);
 						});
+
+
 
 						$suggestions.show();
 					} else {
@@ -841,6 +880,7 @@ var Tagmarks = (function () {
 		});
 
 
+		var google204Fetched = false;
 
 		$webSearchInput.on('keyup', function(e) {
 
@@ -854,6 +894,11 @@ var Tagmarks = (function () {
 				return;
 			}
 
+			if (!google204Fetched) {
+				google204Fetched = true;
+				(new Image).src = 'https://clients1.google.com/generate_204';
+			}
+
 			if (e.keyCode == KEYCODE_DOWN || e.keyCode == KEYCODE_UP) {
 				$suggestions.find('div.selected').removeClass('selected');
 
@@ -861,10 +906,10 @@ var Tagmarks = (function () {
 					var $selItem = $suggestions.find('div:nth-child(' + selSearchIdx + ')');
 					if ($selItem.length) {
 						$selItem.addClass('selected');
-						var itemText = $selItem.text();
-						$webSearchInput.val(itemText);
-						$webSearchInput.get(0).selectionStart = itemText.length;
-						$webSearchInput.get(0).selectionEnd = itemText.length;
+						var selItemQuery = $selItem.attr('q');
+						$webSearchInput.val(selItemQuery);
+						$webSearchInput.get(0).selectionStart = selItemQuery.length;
+						$webSearchInput.get(0).selectionEnd = selItemQuery.length;
 					} else {
 						selSearchIdx = 0;
 					}
@@ -984,7 +1029,7 @@ var Tagmarks = (function () {
 			$.ajax({
 				url: 'data.php',
 				type: 'GET',
-				data: {format: 'json'},
+				data: {},
 				dataType: 'json',
 				success: function (response) {
 					onResponseReceived(response, 'dataResponse');

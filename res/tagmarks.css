@@ -1,6 +1,6 @@
 
 html {
-	background: url(../backgrounds/blue_radial.jpg) no-repeat center center fixed;
+	background: #3161a3 url(../backgrounds/blue_radial.jpg) no-repeat center center fixed;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -160,6 +160,7 @@ body > #left .tag.selected:hover {
 	height: 22px;
 	line-height: 22px;
 	padding-left: 7px;
+	cursor: pointer;
 }
 
 #web_search_bar span.suggestions_pixel > #web_search_suggestions > div.selected {

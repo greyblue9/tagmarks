@@ -29,7 +29,7 @@ class Setup {
 		define('JSON_INDENTED_OUTPUT', $inidata['json_indented_output']);
 
 		define('DEBUG_MODE', $inidata['debug_mode']);
-
+		define('CACHE_LEVEL', $inidata['cache_level']);
 	}
 
 	private static function iniMerge($config_ini, $custom_ini)
