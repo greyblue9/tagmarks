@@ -20,7 +20,7 @@ var Tagmarks = (function () {
 	};
 
 	var Logger = (function () {
-		var LOGGING_ENABLED = true;
+		var LOGGING_ENABLED = false;
 
 		var LOG_TYPES_ALL = ['error', 'warning', 'info', 'log', 'debug'];
 		var LOG_TYPES_ENABLED = ['error', 'warning', 'info', 'log', 'debug'];
@@ -103,6 +103,7 @@ var Tagmarks = (function () {
 		var Sites = (function () {
 
 			var sites = [];
+			var initialized = false;
 
 			var sort = function () {
 				sites.sort(function (a, b) {
@@ -176,6 +177,7 @@ var Tagmarks = (function () {
 			};
 
 			return {
+				initialized: initialized,
 				set: function (sitesData) {
 					sites = sitesData;
 					sort();
@@ -185,6 +187,7 @@ var Tagmarks = (function () {
 				},
 				save: function () {
 					save();
+					localStorage.removeItem('cached-data-response');
 				}
 			}
 
@@ -269,8 +272,10 @@ var Tagmarks = (function () {
 			var state = {
 				selectedTagIds: []
 			};
+			var initialized = false;
 
 			return {
+				initialized: initialized,
 				set: function (stateData) {
 					$.each(stateData, function(key, val) {
 						if (key in state) {
@@ -283,6 +288,7 @@ var Tagmarks = (function () {
 				get: function () {
 					return state;
 				},
+
 				save: function () {
 					$.ajax({
 						url: 'state.php',
@@ -296,6 +302,7 @@ var Tagmarks = (function () {
 						},
 						error: Logger.jqueryAjaxErrorHandler
 					});
+					localStorage.removeItem('cached-state-response');
 				}
 			}
 
@@ -319,40 +326,74 @@ var Tagmarks = (function () {
 	var View = (function () {
 
 		var $sitesContainer = $('#center');
+		var sitesContainer = $sitesContainer.get(0);
 		var $tagsContainer = $('#tag_nav_area');
+
+
 
 		var renderSites = function (sites, tagsByIdFunc, siteOrderChangedCallback, removeSiteCallback, $container) {
 
-			$container.html('');
-			$.each(sites, function (siteIdx, site) {
+			var selById = {};
+			if (Model.State.initialized == true) {
+				var selTagIds = Model.State.get().selectedTagIds;
 
-				var $a = $('<a />');
-				$a.attr('href', site.url);
-				$a.attr('title', site.name);
-				$a.addClass('thumbnail_link');
-				$a.attr('tags', site.tags.join(' '));
-				$a.attr('site_id', site.id);
-				$a.attr('site_idx', siteIdx);
-				$a.css('z-index', sites.length - siteIdx);
-				$a.disableSelection();
-
-				var $img = $('<img />');
+				for (var i = 0; i < selTagIds.length; i++) {
+					selById[selTagIds[i]] = true;
+				}
+				console.log(selById);
+			}
 
 
-				$img.attr('src', site.thumbnail);
-				$img.attr('title', site.name);
-				$img.disableSelection();
+			sitesContainer.innerHTML = '';
 
-				if ($img.get(0).complete) {
-					$img.trigger('load');
+
+			var numSites = sites.length;
+			var site;
+			for(var i=0; i<numSites; i++) {
+				site = sites[i];
+				var a = document.createElement('a');
+				a.href = site.url;
+				a.title = site.name;
+				a.className = 'thumbnail_link';
+				a.setAttribute('tags', site.tags.join(' '));
+				a.setAttribute('site_id', site.id);
+				a.setAttribute('site_idx', i);
+				a.style.zIndex = numSites - i;
+
+
+				var img = document.createElement('img');
+				img.src = site.thumbnail;
+				//img.title = site.name;
+
+				if (Model.State.initialized) {
+					var stayDisplayed = false;
+					for (var t=0; t<site.tags.length; t++) {
+
+						console.log(site.tags, site.tags[t], selById, (site.tags[t] in selById));
+						if (site.tags[t] in selById) {
+							stayDisplayed = true;
+							break;
+						}
+					}
+
+					if (!stayDisplayed) {
+						a.style.display = 'none';
+					}
 				}
 
+				/*if (img.complete) {
+					var event = document.createEvent('HTMLEvents');
+					event.initEvent('load', true, true);
+					img.dispatchEvent(event);
+				}*/
 
-				var $tagStrip = $('<div class="tag_strip" />');
+
+				/*var $tagStrip = $(document.createElement('div'));
+				$tagStrip.addClass('tag_strip');
 				$.each(site.tags, function (tagIdx, tagIdName) {
 
 					var tag = tagsByIdFunc(tagIdName);
-					var $tag = $('<div class="tag" />');
+					var $tag = $(document.createElement('div')).addClass('tag');
 					$tag.text(tag.name);
 					$tag.css('background-color', tag.background_color);
 					if ('foreground_color' in tag) {
@@ -362,7 +403,9 @@ var Tagmarks = (function () {
 
 				});
 
-				var $label = $('<span class="label"><span>'+ htmlEntities(site.name)+'</span></span>');
+				var $label = $(document.createElement('span')).addClass('label');
+				$label.append($(document.createElement('span')).text(site.name));
+
 				var $controls = $(''
 					+'<div class="controls">'
 					+'  <div class="remove">&nbsp;</div>'
@@ -373,18 +416,15 @@ var Tagmarks = (function () {
 				$controls.find('> .remove').on('click', function(event) {
 					event.preventDefault();
 					View.Dialogs.RemoveSite.show($a, site, removeSiteCallback);
-				});
+				});*/
 
-				$a.append($img);
-				$a.append($label);
-				$a.append($controls);
-				$a.append($tagStrip);
+				a.appendChild(img);
 
-				$container.append($a);
+				sitesContainer.appendChild(a);
 
-			});
+			}
 
-			$container.sortable({
+			$sitesContainer.sortable({
 				revert: false,
 				containment: 'parent',
 				helper: 'clone',
@@ -395,72 +435,71 @@ var Tagmarks = (function () {
 				stop: siteOrderChangedCallback
 			});
 
-			$container.disableSelection();
-
 		}; // render()
 
 		var renderTags = function (tags, selectedTagIds, selectedTagsChangedCallback, $container) {
 
-			$container.html('');
+			var tagnavArea = document.getElementById('tag_nav_area');
+			tagnavArea.innerHTML = '';
 
-			$.each(tags, function (idx, tag) {
-				// Make new tag
-				var $tag = $('<div class="tag">' + tag.name + '</div>');
+			var selectedByTagId = {};
+			for (var i=0; i<selectedTagIds.length; i++) {
+				selectedByTagId[selectedTagIds[i]] = true;
+			}
 
-				// Set CSS background color
-				$tag.css('background-color', tag.background_color);
-				// Can calculate "deselected" color now that CSS bg color is set
-				var color_rgb_str = $tag.css('background-color');
-				var color_rgb = TagmarksUtils.css_color_string_to_rgb(color_rgb_str); // [r,g,b]
-				var color_hsl = // color_hsl is 3 values in range 0-1
-					TagmarksUtils.rgbToHsl(color_rgb[0], color_rgb[1],
-						color_rgb[2]);
-				var dark_color_rgb = TagmarksUtils.hslToRgb(color_hsl[0],
-					color_hsl[1], color_hsl[2] * .53);
-				// Final result (darkened color for "deselected" state)
-				var dark_color_str = 'rgb(' + dark_color_rgb.join(',') + ')'; // rgb(x,y,z)
+			for (var t=0; t<tags.length; t++) {
 
-				if ('foreground_color' in tag) {
-					$tag.css('color', tag.foreground_color);
-				}
+				(function() {
 
-				$tag.attr('tag', tag.id_name);
-				$tag.attr('sel_color', tag.background_color);
-				$tag.attr('desel_color', dark_color_str);
+					// Make new tag
 
-				// Tag class/color selected toggle
-				$tag.on('click', function () {
-					$tag.trigger('setSelectedState', !$tag.hasClass('selected'));
-					selectedTagsChangedCallback();
-				});
+					var tag = tags[t];
 
-				$tag.on('setSelectedState', function (event, selected) {
-					if (selected) {
-						$tag.addClass('selected');
-						$tag.css('background-color', $tag.attr('sel_color'));
+					var tagDiv = document.createElement('div');
+
+					var isSelected;
+
+					if (!selectedTagIds.length || tag.id_name in selectedByTagId) {
+						tagDiv.className = 'tag selected';
+						tag.selected = 'yes';
+					} else if (selectedTagIds.length) {
+						tagDiv.className = 'tag';
+						tag.selected = 'no';
 					} else {
-						$tag.removeClass('selected');
-						$tag.css('background-color', $tag.attr('desel_color'));
+						console.error('Unknown inital tag selected state');
 					}
-				});
 
 
-				$tag.trigger('setSelectedState', $.inArray(tag.id_name, selectedTagIds) !== -1? true: false);
+					tagDiv.innerHTML = tag.name;
 
-				// Insert tag into container element (dials container)
-				$container.append($tag);
+					tagDiv.style.backgroundColor = tag.background_color;
+
+					if (typeof tag.foreground_color !== 'undefined') {
+						tagDiv.style.color = tag.foreground_color;
+					}
+
+					tagDiv.setAttribute('tag', tag.id_name);
 
 
+					tagDiv.onclick = function() {
 
-			});
+						tag.selected = tag.selected == 'no'? 'yes': 'no';
+						tagDiv.className = 'tag'+(tag.selected == 'yes'? ' selected':'');
+						selectedTagsChangedCallback();
+					};
+
+					tagnavArea.appendChild(tagDiv);
+				})();
+
+			}
 		};
 
 		var Viewport = (function () {
 
-			var outerMarginTotal = null;
-			var outerMarginWidth = null;
-			var thumbnailSepSize = null;
-			var sitesContainerMinWidth = null; // size limited by scrollbar
+			var outerMarginTotal = 0;
+			var outerMarginWidth = 0;
+			var thumbnailSepSize = 0;
+			var sitesContainerMinWidth = 0; // size limited by scrollbar
 
 			var windowInnerHeight = null;
 			var windowInnerHeight_last = null;
@@ -470,81 +509,49 @@ var Tagmarks = (function () {
 			var onFindOpenedCallback = null;
 			var onFindDismissedCallback = null;
 
-			var recalculate = function () {
-				var $body = $('body');
-				$body.css('overflow', 'scroll');
-				sitesContainerMinWidth = $sitesContainer.innerWidth();
 
-				$body.css('overflow', 'auto');
-				outerMarginTotal = $body.outerWidth(true) - $body.width();
-				outerMarginWidth = Math.floor(outerMarginTotal / 2);
-				thumbnailSepSize = outerMarginWidth;
+			var $webSearchBar = null;
 
-				windowInnerHeight_last = windowInnerHeight;
-				windowInnerHeight = $(window).innerHeight();
-				var availHeightChange;
-				if (windowInnerHeight_last === null) {
-					availHeightChange = 0;
-				} else {
-					availHeightChange = windowInnerHeight - windowInnerHeight_last;
-				}
-				availHeightChangeTotal += availHeightChange;
-				if (!timeoutActive) {
-					timeoutActive = true;
-					setTimeout(function() {
-						availHeightChangeTotal = 0;
-						timeoutActive = false;
-					}, 1500);
-				}
-				// Firefox find bar was 31px on my machine
 
-				if (availHeightChangeTotal >= 29 && availHeightChangeTotal <= 33) {
-					// Firefox "find" bar dismissed
-					if (typeof onFindDismissedCallback == 'function') {
-						onFindDismissedCallback();
-					}
-				} else if (availHeightChangeTotal >= -33 && availHeightChangeTotal <= -29) {
-					// Firefox "find" bar opened
-					if (typeof onFindOpenedCallback == 'function') {
-						onFindOpenedCallback();
-					}
-				}
-			};
+			var previousWidth = 0;
 
 			return {
 				onResize: function() {
-					recalculate();
+					Logger.log('recalculating sizes');
 
-					var $firstRenderedThumb = $('a.thumbnail_link:first');
-					var thumbBorderWidthTotal = $firstRenderedThumb.outerWidth(false) - $firstRenderedThumb.innerWidth();
+					sitesContainerMinWidth = document.body.clientWidth - 190;
 
-					var thumbWidth = Math.floor(
-						(
-							sitesContainerMinWidth
-							- (thumbBorderWidthTotal * Defaults.ThumbnailSize.width)
-							- (thumbnailSepSize * (Defaults.ThumbsPerRow - 1))
-							- (outerMarginWidth * 2)
-						)
-						/ Defaults.ThumbsPerRow
-					);
+					//recalculate();
+
+					//var $firstRenderedThumb = $('a.thumbnail_link:first');
+					//var thumbBorderWidthTotal = 0;// $firstRenderedThumb.outerWidth(false) - $firstRenderedThumb.innerWidth();
+
+					var thumbWidth = parseInt(sitesContainerMinWidth / Defaults.ThumbsPerRow);
+					if (thumbWidth == previousWidth) {
+						return;
+					}
+
+					previousWidth = thumbWidth;
 
 					if (thumbWidth >= Defaults.ThumbnailSize.width) {
 						thumbWidth = Defaults.ThumbnailSize.width;
 					}
 
-					var thumbHeight = (Defaults.ThumbnailSize.height / Defaults.ThumbnailSize.width) * thumbWidth;
+					var thumbHeight = parseInt(0.56112853 * thumbWidth);
 
-					var $thumbnailLinks = $('a.thumbnail_link');
-					$thumbnailLinks.css({
-						width: thumbWidth + 'px',
-						height: thumbHeight + 'px'
-					});
+					document.styleSheets[0].insertRule('#center > a { width: '+thumbWidth+'px; height: '+thumbHeight+'px; }',
+						document.styleSheets[0].cssRules.length);
 
-					var $sitesContainer = $('#center');
+					//$links.width(thumbWidth);
+					//$links.height(thumbHeight);
 
-					var $webSearchBar = $('#web_search_bar');
-					$webSearchBar.css('width', $sitesContainer.width()+'px');
-					$webSearchBar.css('overflow', 'visible');
+					if ($webSearchBar === null) {
+						$webSearchBar = $('#web_search_bar');
+						$webSearchBar.css('overflow', 'visible');
+					}
+
+					$webSearchBar.width(sitesContainerMinWidth);
+
 				},
 
 				setFindTextBarCallbacks: function(findOpenedCallback, findDismissedCallback) {
@@ -731,25 +738,64 @@ var Tagmarks = (function () {
 
 			State: {
 				set: function(state) {
-					var $sites = $('a.thumbnail_link');
-					$sites.hide();
+					//var $sites = $('a.thumbnail_link');
+					//$sites.hide();
 
-					$tagsContainer.find('.tag').each(function() {
-						var $tag = $(this);
-						var tagId = $tag.attr('tag');
-						var selected = ($.inArray(tagId, state.selectedTagIds) != -1);
-						$tag.trigger('setSelectedState', selected);
+					var sitesOnscreen = document.getElementById('center').children.length;
 
-						if (selected) {
-							$sites.filter('[tags~="'+tagId+'"]').show();
+					if (sitesOnscreen) {
+
+						var selTagsById = {};
+						for (var i=0; i<state.selectedTagIds.length; i++) {
+							selTagsById[state.selectedTagIds[i]] = true;
 						}
-					});
+
+						var sites = Model.Sites.get();
+						for (i=0; i<sites.length; i++) {
+							var stayDisplayed = false;
+							for (var t=0; t<sites[i].tags.length; t++) {
+								if (sites[i].tags[t] in selTagsById) {
+									stayDisplayed = true;
+								}
+							}
+
+
+							if (!stayDisplayed) {
+								$('#center > a[site_id="' + sites[i].id + '"]').hide();
+							} else {
+								$('#center > a[site_id="' + sites[i].id + '"]').show();
+							}
+						}
+
+						var tags = Model.Tags.get();
+						for (i=0; i<tags.length; i++) {
+							if (tags[i].id_name in selTagsById) {
+								$('#tag_nav_area > div[tag='+tags[i].id_name+']').addClass('selected');
+								tags[i].selected = 'yes';
+							} else {
+								$('#tag_nav_area > div[tag='+tags[i].id_name+']').removeClass('selected');
+								tags[i].selected = 'no';
+							}
+						}
+
+					} else {
+						// Sites not rendered
+
+					}
+
 				},
 				get: function() {
 					var selectedTagIds = [];
-					$tagsContainer.find('.tag.selected').each(function() {
-						selectedTagIds.push($(this).attr('tag'));
-					});
+
+
+					var tagNavArea = document.getElementById('tag_nav_area');
+					var tagNavs = tagNavArea.children;
+					for (var i=0; i<tagNavs.length; i++) {
+						if (tagNavs[i].className.indexOf('selected') !== -1) {
+							selectedTagIds.push(tagNavs[i].getAttribute('tag'));
+						}
+					}
+
 
 					return {
 						selectedTagIds: selectedTagIds
@@ -772,23 +818,30 @@ var Tagmarks = (function () {
 
 	var setButtonEventHandlers = function() {
 
-		var $addSiteDialog = $('#add_site_dialog');
+
 		var $controlsArea = $('#controls_area');
 
-		$addSiteDialog.find('.button.cancel').on('click', function () {
-			View.Dialogs.AddEditSite.dismiss();
-		});
-
-		$addSiteDialog.find('.button.save').on('click', function () {
-			var siteName = View.Dialogs.AddEditSite.getSiteName();
-			var siteUrl = View.Dialogs.AddEditSite.getSiteName();
-			var siteTagIds = View.Dialogs.AddEditSite.getSiteTagIds();
-			var siteThumbnailUrl = View.Dialogs.AddEditSite.getSiteThumbnailUrl();
-
-			// TODO: Add new site to model (should trigger save)
-		});
+		var $addSiteDialog = null;
 
 		$controlsArea.find('.button.add_site').on('click', function () {
+
+			if ($addSiteDialog === null) {
+				$addSiteDialog = $('#add_site_dialog');
+				$addSiteDialog.find('.button.cancel').on('click', function () {
+					View.Dialogs.AddEditSite.dismiss();
+				});
+
+				$addSiteDialog.find('.button.save').on('click', function () {
+					var siteName = View.Dialogs.AddEditSite.getSiteName();
+					var siteUrl = View.Dialogs.AddEditSite.getSiteName();
+					var siteTagIds = View.Dialogs.AddEditSite.getSiteTagIds();
+					var siteThumbnailUrl = View.Dialogs.AddEditSite.getSiteThumbnailUrl();
+
+					// TODO: Add new site to model (should trigger save)
+				});
+
+			}
+
 			View.Dialogs.AddEditSite.show(
 				Model.Tags.get(),
 				function() {
@@ -814,11 +867,13 @@ var Tagmarks = (function () {
 			}
 		});
 
-		var $webSearchBar = $('#web_search_bar');
-		var $webSearchInput = $webSearchBar.find('input[type=text]');
-		$webSearchInput.val('').focus().select();
-		var $webSearchForm = $('#web_search_form');
-		var $suggestions = $('#web_search_suggestions');
+
+		var webSearchInput = document.getElementById('web_search_input');
+		webSearchInput.value = '';
+		webSearchInput.focus();
+
+		var webSearchForm = document.forms[0];//$('#web_search_form');
+		var suggestions = document.getElementById('web_search_suggestions');
 
 		var lastQuery = '';
 		var KEYCODE_UP = 38;
@@ -841,17 +896,54 @@ var Tagmarks = (function () {
 			var $suggestion = $($event.target);
 			var clickedItemQuery = $suggestion.attr('q');
 			$webSearchInput.val(clickedItemQuery);
-			$webSearchForm.submit();
+			webSearchForm.submit();
 		}
 
 		var google204Fetched = false;
 
-		$webSearchInput.on('keyup', function(e) {
-			if (e.keyCode == KEYCODE_UP || e.keyCode == KEYCODE_DOWN || e.keyCode == KEYCODE_ENTER) return;
-			var q = $.trim($(this).val());
+		webSearchInput.onkeyup = function(e) {
 
-			if (typeof q !== 'string' || q.length < 1) return;
-			if (q == lastQuery) return;
+
+			if (e.keyCode == KEYCODE_DOWN || e.keyCode == KEYCODE_UP) {
+				$suggestions.find('div.selected').removeClass('selected');
+
+				if (selSearchIdx > 0) {
+					var $selItem = $suggestions.find('div:nth-child(' + selSearchIdx + ')');
+					if ($selItem.length) {
+						$selItem.addClass('selected');
+						var selItemQuery = $selItem.attr('q');
+						$webSearchInput.val(selItemQuery);
+						$webSearchInput.get(0).selectionStart =
+							selItemQuery.length;
+						$webSearchInput.get(0).selectionEnd =
+							selItemQuery.length;
+					} else {
+						selSearchIdx = 0;
+					}
+				}
+
+				if (e.keyCode == KEYCODE_DOWN) {
+					selSearchIdx++;
+				} else {
+					// UP
+					if (selSearchIdx > 0) {
+						selSearchIdx--;
+					}
+				}
+				return
+			} else if (e.keyCode == KEYCODE_ENTER) {
+				return;
+			}
+
+
+			var q = $.trim(webSearchInput.value);
+
+			if (typeof q !== 'string' || q.length < 1) {
+				return;
+			}
+			if (q == lastQuery) {
+				return;
+			}
 
 			selSearchIdx = 0;
 
@@ -865,11 +957,11 @@ var Tagmarks = (function () {
 				success: function(response) {
 					if (typeof response == 'object' && 'length' in response) {
 
-						$suggestions.html('');
+						suggestions.innerHTML = '';
 						$.each(response, function(idx, item) {
 							var $suggestion = $('<div><span>'+htmlEntities(item.substr(0, q.length))+'</span>'+htmlEntities(item.substr(q.length))+'</div>');
 							$suggestion.attr('q', item);
-							$suggestions.append($suggestion);
+							suggestions.appendChild($suggestion.get(0));
 
 							$suggestion.on('mouseenter',
 								onSuggestionMouseenter);
@@ -878,8 +970,7 @@ var Tagmarks = (function () {
 						});
 
 
-
-						$suggestions.show();
+						suggestions.style.display = 'block';
 
 
 						if (!google204Fetched) {
@@ -889,56 +980,28 @@ var Tagmarks = (function () {
 						}
 
 					} else {
-						$suggestions.hide();
+						suggestions.style.display = 'none';
 					}
 				},
 				error: Logger.jqueryAjaxErrorHandler
 			});
-		});
+		};
 
 
-
-
-		$webSearchInput.on('keyup', function(e) {
-
-			if (e.keyCode == KEYCODE_DOWN) {
-				selSearchIdx++;
-			} else if (e.keyCode == KEYCODE_UP) {
-				if (selSearchIdx > 0) {
-					selSearchIdx--;
-				}
-			} else if (e.keyCode == KEYCODE_ENTER) {
-				return;
-			}
-
-			if (e.keyCode == KEYCODE_DOWN || e.keyCode == KEYCODE_UP) {
-				$suggestions.find('div.selected').removeClass('selected');
-
-				if (selSearchIdx > 0) {
-					var $selItem = $suggestions.find('div:nth-child(' + selSearchIdx + ')');
-					if ($selItem.length) {
-						$selItem.addClass('selected');
-						var selItemQuery = $selItem.attr('q');
-						$webSearchInput.val(selItemQuery);
-						$webSearchInput.get(0).selectionStart = selItemQuery.length;
-						$webSearchInput.get(0).selectionEnd = selItemQuery.length;
-					} else {
-						selSearchIdx = 0;
-					}
-				}
-			}
-
-		});
 
 
 	};
 
 	var onSelectedTagsChanged = function () {
 		var state = View.State.get();
+
 		Model.State.set(state);
+
+
 		View.State.set(state);
 
 		Model.State.save();
+
 	};
 
 	var onSiteOrderChanged = function () {
@@ -980,6 +1043,7 @@ var Tagmarks = (function () {
 
 		if (whichResponse == 'dataResponse') {
 
+			Model.Sites.initialized = true;
 
 			Model.init(response.settings, response.sites, response.tags);
 
@@ -990,14 +1054,14 @@ var Tagmarks = (function () {
 				onSiteOrderChanged, removeSiteCallback);
 
 			$(window).on('resize', View.Viewport.onResize);
-			$(window).trigger('resize');
 
-			setButtonEventHandlers();
+
+
 
 		}
 
 		if (whichResponse == 'stateResponse') {
-
+			Model.State.initialized = true;
 			var state;
 			if ('errorIdName' in response && response.errorIdName == 'NoSavedState') {
 				// No saved state
@@ -1014,11 +1078,20 @@ var Tagmarks = (function () {
 		}
 
 
+		if (Model.State.initialized && Model.Sites.initialized) {
+
+			$(window).trigger('resize');
+
+			setButtonEventHandlers();
+		}
 
 	};
 
 	// Tagmarks public interface
 	return {
+
+		Model: Model,
+
 		getSites: function() {
 			return Model.Sites.get();
 		},
@@ -1032,6 +1105,8 @@ var Tagmarks = (function () {
 			return Model.State.get();
 		},
 
+		resize: View.Viewport.onResize,
+
 		// Called from upload iframe when iframe loads POST response
 		handleUpload: function(uploadInfo) {
 			Logger.log('Upload received from iframe', 'uploadInfo:', uploadInfo, 'debug');
@@ -1040,26 +1115,42 @@ var Tagmarks = (function () {
 
 		init: function () {
 
-			$.ajax({
-				url: 'data.php',
-				type: 'GET',
-				data: {},
-				dataType: 'json',
-				success: function (response) {
-					onResponseReceived(response, 'dataResponse');
-				},
-				error: Logger.jqueryAjaxErrorHandler
-			});
+			if (localStorage.getItem('cached-data-response')) {
+				Logger.log('Local storage cache hit for dataResponse', 'info');
+				onResponseReceived(JSON.parse(localStorage.getItem('cached-data-response')), 'dataResponse');
+			} else {
+				Logger.log('Local storage cache miss for dataResponse', 'log');
+				$.ajax({
+					url: 'data.php',
+					type: 'GET',
+					data: {},
+					dataType: 'json',
+					success: function (response) {
+						onResponseReceived(response, 'dataResponse');
+						localStorage.setItem('cached-data-response', JSON.stringify(response));
+					},
+					error: Logger.jqueryAjaxErrorHandler
+				});
 
-			$.ajax({
-				url: 'state.php',
-				type: 'GET',
-				data: {},
-				success: function(response) {
-					onResponseReceived(response, 'stateResponse');
-				},
-				error: Logger.jqueryAjaxErrorHandler
-			});
+			}
+
+			if (localStorage.getItem('cached-state-response')) {
+				Logger.log('Local storage cache hit for stateResponse', 'info');
+				onResponseReceived(JSON.parse(localStorage.getItem('cached-state-response')), 'stateResponse');
+			} else {
+				Logger.log('Local storage cache miss for stateResponse', 'log');
+				$.ajax({
+					url: 'state.php',
+					type: 'GET',
+					data: {},
+					success: function(response) {
+						onResponseReceived(response, 'stateResponse');
+						localStorage.setItem('cached-state-response', JSON.stringify(response));
+					},
+					error: Logger.jqueryAjaxErrorHandler
+				});
+
+			}
 
 		}
 	}

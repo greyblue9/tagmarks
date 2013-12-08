@@ -48,7 +48,7 @@ header('Content-Type: text/html; charset=utf-8');
 				    </div>
 				</span>
 
-			<input type="text" tabindex="0" value="" name="q" />
+			<input type="text" tabindex="0" value="" name="q" id="web_search_input" />
 
 			<span class="google_logo_rigtside_balancer">&nbsp;</span>
 
@@ -121,7 +121,7 @@ header('Content-Type: text/html; charset=utf-8');
 	<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
 	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
 
-	<script type="text/javascript" src="res/tagmarks-utils.js"></script>
+	<!--<script type="text/javascript" src="res/tagmarks-utils.js"></script>-->
 	<script type="text/javascript" src="res/tagmarks.js"></script>
 
 
