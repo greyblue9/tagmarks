@@ -857,6 +857,45 @@ var Tagmarks = (function () {
 
 			lastQuery = q;
 
+
+			// Determine what the user is putting into the input
+			var qType = 'unknown';
+			var isProtoUrl = q.indexOf('http://') === 0 || q.indexOf('https://') === 0;
+
+			var lastDotPos = -1;
+			var hasSpace = false;
+
+			if (!isProtoUrl) {
+				var pos = -1;
+				do {
+					pos = q.indexOf('.', pos + 1);
+				} while (q.indexOf('.', pos + 1) != -1);
+
+				lastDotPos = pos;
+				hasSpace = q.indexOf(' ') !== -1;
+			}
+
+			if (isProtoUrl || (lastDotPos != -1 && !hasSpace)) {
+				// URL
+				qType = 'url';
+			}
+
+			if (qType == 'unknown') {
+				var tagmarksSiteMatches = [];
+				var sites = Model.Sites.get();
+				$.each(sites, function (idx, site) {
+					if (site.name.toLowerCase().indexOf(q.toLowerCase()) !== -1) {
+						tagmarksSiteMatches.push(site);
+					}
+				});
+
+				if (tagmarksSiteMatches.length) {
+					qType = 'tagmarks-site';
+				}
+			}
+
+
+
 			$.ajax({
 				url: 'search_suggestions.php',
 				type: 'GET',
