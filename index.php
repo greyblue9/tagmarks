@@ -1,9 +1,6 @@
 <?php
 
-
 header('Content-Type: text/html; charset=utf-8');
-
-
 
 
 
@@ -38,8 +35,9 @@ header('Content-Type: text/html; charset=utf-8');
 
 	<div id="web_search_bar">
 		<form id="web_search_form" autocomplete="off" method="get" action="https://www.google.com/search">
-			<a class="google_logo" href="https://www.google.com/"
-			   alt="Google Search" title="Google Search">&nbsp;</a>
+			<div class="logo_and_search_container">
+				<a class="google_logo" href="https://www.google.com/"
+			        alt="Google Search" title="Google Search">&nbsp;</a>
 
 				<span class="suggestions_pixel">
 				    <div id="web_search_suggestions">
@@ -48,9 +46,10 @@ header('Content-Type: text/html; charset=utf-8');
 				    </div>
 				</span>
 
-			<input type="text" tabindex="0" value="" name="q" />
+				<input type="text" tabindex="0" value="" name="q" />
 
-			<span class="google_logo_rigtside_balancer">&nbsp;</span>
+				<span class="google_logo_rigtside_balancer">&nbsp;</span>
+			</div>
 
 			<input type="hidden" name="ie" value="utf-8" />
 			<input type="hidden" name="oe" value="utf-8" />
@@ -118,8 +117,8 @@ header('Content-Type: text/html; charset=utf-8');
 	</div>
 
 
-	<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
-	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
+	<script type="text/javascript" src="res/jquery-2.0.3.js"></script>
+	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.js"></script>
 
 	<script type="text/javascript" src="res/tagmarks-utils.js"></script>
 	<script type="text/javascript" src="res/tagmarks.js"></script>

@@ -1,3 +1,0 @@
-Testing TortoiseGit SSH access to Github
-Inserting a line
-Modification: 3

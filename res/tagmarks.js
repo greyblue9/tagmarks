@@ -274,6 +274,7 @@ var Tagmarks = (function () {
 				set: function (stateData) {
 					$.each(stateData, function(key, val) {
 						if (key in state) {
+							// state variables for application
 							state[key] = val;
 						} else {
 							Logger.log('Model.State.set - Unrecognized state data key:', key, 'warning');
@@ -889,11 +890,19 @@ var Tagmarks = (function () {
 					}
 				});
 
-				if (tagmarksSiteMatches.length) {
+				if (tagmarksSiteMatches.length != 0 && tagmarksSiteMatches.length <= 3) {
 					qType = 'tagmarks-site';
+				} else {
+					qType = 'web-search';
 				}
 			}
 
+
+			if (qType == 'unknown') {
+				qType = 'web-search'
+			}
+
+			console.log(qType, tagmarksSiteMatches);
 
 
 			$.ajax({

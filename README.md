@@ -10,7 +10,7 @@ https://github.com/greyblue9/tagmarks
 Hosted demo:
 http://tagmarks.org/
 
-![Screenshot](/res/screenshot-websearch.png)
+![Screenshot](/res/img/screenshot-websearch.png)
 
 
 Installation

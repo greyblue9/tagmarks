@@ -2,19 +2,29 @@
 
 namespace Tagmarks;
 
+
 define('CR', "\r");
 define('LF', "\n");
 define('CRLF', "\r\n");
+
+
+if (is_dir(__DIR__.'/../private')) {
+	define('PRIVATE_DIR_PATH', '../private/tagmarks');
+} else if (is_dir(__DIR__.'/../../private')) {
+	define('PRIVATE_DIR_PATH', '../../private/tagmarks');
+} else if (is_dir(__DIR__.'/../../../private')) {
+	define('PRIVATE_DIR_PATH', '../../../private/tagmarks');
+} else {
+	die('Unable to find private/ directory.');
+}
 
 
 class Setup {
 
 	static function readIniFiles()
 	{
-		$defaults_ini = parse_ini_file(
-			realpath(__DIR__).'/../defaults/tagmarks.ini.php', false);
-		$user_ini = parse_ini_file(
-			realpath(__DIR__).'/../tagmarks.ini.php', false);
+		$defaults_ini = parse_ini_file('defaults/tagmarks.ini.php', false);
+		$user_ini = parse_ini_file(PRIVATE_DIR_PATH.'/tagmarks.ini.php', false);
 
 		$inidata = self::iniMerge($defaults_ini, $user_ini);
 
@@ -363,6 +373,90 @@ class Common {
 		$mtime = filemtime($file);
 
 		return $file.'?lastmod='.$mtime;
+	}
+
+	static function getHtmlTable($data, $columns = array('__key', '__value'))
+	{
+
+		$rows = array();
+
+		foreach ($data as $key => $val) {
+			$row = array();
+			foreach ($columns as $column) {
+				$cellval = '&nbsp;';
+				if ($column == '__key') {
+					$cellval = $key;
+				}
+				else if ($column == '__value') {
+					$cellval = $val;
+				}
+				$row[] = $cellval;
+			}
+			$rows[] = $row;
+		}
+
+		$html = '';
+
+		if (headers_sent() === false) {
+			$html .= '<!DOCTYPE html><html><head><body>';
+		}
+
+		$html .= '<style type="text/css">
+			table.getHtmlTable {
+				border-spacing: 0;
+				border: 1px solid #000;
+				border-collapse: separate;
+				width: 600px;
+				padding: 0;
+				margin: 0;
+				font-family: Consolas, monospace;
+			}
+			table.getHtmlTable tr {
+				padding: 0;
+				margin: 0;
+			}
+			table.getHtmlTable tr:nth-child(odd) {
+				background: #f0f3f7;
+			}
+			table.getHtmlTable thead > tr:first-child {
+				background: #dae2e9;
+			}
+			table.getHtmlTable td {
+				width: 600px;
+				padding: 4px 10px;
+				margin: 0;
+				border-bottom: 1px solid #aaa;
+			}
+			table.getHtmlTable td + td {
+				border-left: 1px solid #ddd;
+			}
+			table.getHtmlTable td.blank:after {
+
+			}
+		</style>';
+
+		$html .= '<table class="getHtmlTable"><thead><tr>';
+		foreach ($columns as $column) {
+			$html .= '<th>'.htmlspecialchars($column).'</th>';
+		}
+		$html .= '</tr></thead><tbody>';
+
+		foreach ($rows as $rowCells) {
+			$cellsHtml = array();
+			foreach ($rowCells as $cellval) {
+				$cellsHtml[] = ($cellval !== '')?
+					htmlspecialchars($cellval):
+					'';
+			}
+			$html .= '<tr><td>'.implode('</td><td>', $cellsHtml).'</td></tr>';
+		}
+		$html .= '</table>';
+
+		if (headers_sent() === false) {
+			$html .= '</body></html>';
+		}
+
+		return $html;
 	}
 
 }

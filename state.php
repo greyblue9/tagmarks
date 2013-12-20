@@ -7,7 +7,7 @@ require_once('include/common.inc.php');
 
 Setup::readIniFiles();
 
-define('STATE_FILE', 'state.dat');
+define('STATE_FILE', 'userdata/state.dat');
 
 
 
@@ -37,35 +37,38 @@ function saveState($stateData) {
 
 function loadState() {
 
-	if (!file_exists(STATE_FILE)) {
-		return array(
-			'error' => true,
-			'errorIdName' => 'NoSavedState',
-			'errorText' => 'State file does not exist at expected location',
-			'method' => $_SERVER['REQUEST_METHOD'],
-			'server_action' => 'load_state',
-			'save_file' => STATE_FILE,
-			'save_file_realpath' => realpath(STATE_FILE)
-		);
+	if (file_exists(STATE_FILE)) {
+		$stateDataJson = file_get_contents(STATE_FILE);
+		if ($stateDataJson !== false) {
+			$stateData = json_decode($stateDataJson, true);
+
+			return array(
+				'state' => $stateData,
+				'state_source' => STATE_FILE,
+				'last_modified_timestamp' => filemtime(STATE_FILE),
+				'last_modified' => gmdate('D, d M Y H:i:s \G\M\T', filemtime(STATE_FILE))
+			);
+		}
 	}
 
-	$stateDataJson = file_get_contents(STATE_FILE);
-	if ($stateDataJson === false) {
-		return array(
-			'error' => true,
-			'errorText' => 'Attempt to load saved state file failed',
-			'method' => $_SERVER['REQUEST_METHOD'],
-			'server_action' => 'load_state',
-			'save_file' => STATE_FILE,
-			'save_file_realpath' => realpath(STATE_FILE)
-		);
+	// No state file
+	// Build default state data based on data.json (all tags selected)
+	if (!file_exists(MAIN_DATA_FILEPATH)) {
+		Errors::exitWithFatalError(
+			'Expecting '.MAIN_DATA_FILEPATH.' relative to script directory.');
 	}
 
-	$stateData = json_decode($stateDataJson, true); // decode as array structure
+	$mainData = Json::decodeOrOutputError(file_get_contents(MAIN_DATA_FILEPATH), 'json');
+	$tagsList = array();
+	foreach ($mainData['tags'] as $tag) {
+		$tagsList[] = $tag['id_name'];
+	}
+
 	return array(
-		'state' => $stateData,
-		'last_modified_timestamp' => filemtime(STATE_FILE),
-		'last_modified' => gmdate('D, d M Y H:i:s \G\M\T', filemtime(STATE_FILE))
+		'state' => array(
+			'selectedTagIds' => $tagsList
+		),
+		'state_source' => 'default'
 	);
 }
 

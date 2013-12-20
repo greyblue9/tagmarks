@@ -9,15 +9,6 @@ Setup::readIniFiles();
 
 
 
-
-if (DEBUG_MODE) {
-	// FirePHP library for FirePHP Firebug extension
-	require('include/firephp/fb.php');
-}
-
-
-
-
 function saveSites($sites)
 {
 	$mainDataJson = file_get_contents(MAIN_DATA_FILEPATH);

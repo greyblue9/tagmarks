@@ -52,7 +52,6 @@ var TagmarksUploadFrame = {
 		if (!$.isEmptyObject(uploadInfo)) {
 			parent.Tagmarks.handleUpload(uploadInfo);
 		}
-
 	},
 
 	resize: function() {
