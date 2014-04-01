@@ -13,7 +13,7 @@ define('STATE_FILE', 'userdata/state.dat');
 
 function saveState($stateData) {
 
-	$stateDataJson = json_encode($stateData, JSON_NUMERIC_CHECK);
+	$stateDataJson = json_encode($stateData, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
 
 	$bytesWrittenOrFalse = file_put_contents(STATE_FILE, $stateDataJson);
 	$saveSucceeded =
@@ -111,7 +111,7 @@ if ($method == 'POST') {
 
 header('Content-Type: application/json; charset=utf-8');
 
-$jsonEncodeStr = json_encode($responseArray, JSON_NUMERIC_CHECK);
+$jsonEncodeStr = json_encode($responseArray, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
 
 $output = JSON_INDENTED_OUTPUT?
 	Json::formatJson($jsonEncodeStr):

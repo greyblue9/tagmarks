@@ -902,9 +902,6 @@ var Tagmarks = (function () {
 				qType = 'web-search'
 			}
 
-			console.log(qType, tagmarksSiteMatches);
-
-
 			$.ajax({
 				url: 'search_suggestions.php',
 				type: 'GET',

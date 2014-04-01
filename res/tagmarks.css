@@ -1,9 +1,6 @@
 
 html {
-	background: #3161a3 url(../backgrounds/blue_radial.jpg) no-repeat center center fixed;
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	-o-background-size: cover;
+	background: #3161a3;
 	background-size: cover;
 }
 
@@ -36,7 +33,7 @@ body > #left .tag {
 	font-weight: bold;
 	cursor: pointer;
 	border: 2px solid transparent;
-	user-select: none;
+	-moz-user-select: none;
 	opacity: 0.4;
 }
 
@@ -82,26 +79,26 @@ body > #left .tag.selected:hover {
 
 
 
-#web_search_bar a.google_logo,
-#web_search_bar span.google_logo_rigtside_balancer {
+#web_search_bar a.search_engine_logo,
+#web_search_bar span.search_engine_logo_rigtside_balancer {
 	width: 96px;
 	height: 36px;
 	margin: 0 16px;
 	overflow: hidden;
 }
 
-#web_search_bar a.google_logo {
+#web_search_bar a.search_engine_logo {
 	display: inline-block;
 	vertical-align: middle;
-	background: url(img/google_small_white.png) no-repeat 0 0;
+	background: url(img/duckduckgo_small.png) no-repeat 0 0;
 	cursor: pointer;
-	user-select: none;
+	-moz-user-select: none;
 	border: 0 none;
 	text-decoration: none;
 	margin-left: 0;
 }
 
-#web_search_bar span.google_logo_rigtside_balancer {
+#web_search_bar span.search_engine_logo_rigtside_balancer {
 	display: inline-block;
 	margin-right: 0;
 }
@@ -180,7 +177,7 @@ a.thumbnail_link {
 	z-index: 0;
 
 	margin: 0 0 20px 0;
-	user-select: none;
+	-moz-user-select: none;
 }
 
 a.thumbnail_link:hover {

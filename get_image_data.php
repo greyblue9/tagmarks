@@ -130,7 +130,7 @@ $outputArray = array(
 );
 
 header('Content-Type: application/json; charset=utf-8');
-print(Json::formatJson(json_encode($outputArray, JSON_NUMERIC_CHECK)));
+print(Json::formatJson(json_encode($outputArray, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES)));
 
 
 /*

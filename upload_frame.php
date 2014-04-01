@@ -96,7 +96,7 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 
 </form>
 
-<input type="hidden" id="upload_info" value="<?= htmlentities(json_encode($uploadInfo, JSON_NUMERIC_CHECK)) ?>" />
+<input type="hidden" id="upload_info" value="<?= htmlentities(json_encode($uploadInfo, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES)) ?>" />
 
 
 <? if ($debugMode): ?>

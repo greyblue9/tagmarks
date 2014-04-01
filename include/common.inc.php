@@ -159,7 +159,7 @@ class Errors {
 					'text' => $error_text,
 					'more_info' => $more_info
 				)
-			), JSON_NUMERIC_CHECK));
+			), JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES));
 		} else {
 			print('Error occurred, but output format "'.$format.'" is '.
 				'not supported by exitWithFatalError().');

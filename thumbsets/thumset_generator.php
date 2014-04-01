@@ -106,7 +106,7 @@ if (!isset($_POST['thumbset'])) {
 	}
 
 	// Write the output to a "thumbset.generated-<timestamp>.json" file
-	$output = get_indented_json_string(json_encode($data, JSON_UNESCAPED_SLASHES));
+	$output = get_indented_json_string(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_SLASHES));
 	$out_filepath = "$path/$set_name/thumbset.generated-".time().".json";
 	file_put_contents($out_filepath, $output);
 

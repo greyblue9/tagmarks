@@ -15,7 +15,7 @@ function saveSites($sites)
 	$mainData = Json::decodeOrOutputError($mainDataJson, 'json');
 
 	$mainData['sites'] = $sites;
-	$mainDataJson = json_encode($mainData, JSON_NUMERIC_CHECK);
+	$mainDataJson = json_encode($mainData, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
 
 	$bytesWrittenOrFalse = file_put_contents(MAIN_DATA_FILEPATH, Json::formatJson($mainDataJson));
 	$saveSucceeded =
@@ -104,7 +104,7 @@ if ($method == 'POST') {
 
 header('Content-Type: application/json; charset=utf-8');
 
-$jsonEncodeStr = json_encode($responseArray, JSON_NUMERIC_CHECK);
+$jsonEncodeStr = json_encode($responseArray, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
 
 $output = JSON_INDENTED_OUTPUT?
 	Json::formatJson($jsonEncodeStr):

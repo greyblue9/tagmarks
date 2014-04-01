@@ -7,7 +7,6 @@ $query = $_GET['q'];
 $client = 'ie8'; // using now for compatibility; doesn't work with custom value?
 $url = 'http://www.google.com/complete/search?hl=en-US&q='.urlencode($query).'&client='.$client.'&inputencoding=UTF-8&outputencoding=UTF-8';
 
-
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -37,11 +36,9 @@ while (isset($xml->Section->Item[$idx])) {
 	if (isset($item->Url)) continue;
 	$text = $item->Text;
 	$output[] = (string)$text;
-
-
 }
 
 
-print(json_encode($output, JSON_NUMERIC_CHECK));
+print(json_encode($output, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES));
 
 
