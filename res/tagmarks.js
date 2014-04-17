@@ -8,7 +8,7 @@ $(document).ready(function () {
 
 });
 
-
+/** @namespace */
 var Tagmarks = (function () {
 
 	var htmlEntities = function(str) {
@@ -19,79 +19,77 @@ var Tagmarks = (function () {
 			.replace(/"/g, '&quot;');
 	};
 
-	var Logger = (function () {
-		var LOGGING_ENABLED = true;
+	var Logger = {
+		LOGGING_ENABLED: true,
 
-		var LOG_TYPES_ALL = ['error', 'warning', 'info', 'log', 'debug'];
-		var LOG_TYPES_ENABLED = ['error', 'warning', 'info', 'log', 'debug'];
+		LOG_TYPES_ALL: ['error', 'warning', 'info', 'log', 'debug'],
+		LOG_TYPES_ENABLED: ['error', 'warning', 'info', 'log', 'debug'],
 
-		return {
-			/**
-			 * Log to console, if LOGGING_ENABLED = true and specified log type
-			 * is enabled (see LOG_TYPES_ENABLED). If not specified, assumes
-			 * log type of "log"
-			 *
-			 * @var [Array] message (all except last argument unless only one
-			 *      argument is supplied or last argument is not one of the
-			 *      recognized log types in LOG_TYPES_ALL)
-			 * @var string logType Log type/severity (last argument)
-			 */
-			log: function () {
-				if (LOGGING_ENABLED !== true || typeof console != 'object') return;
+		/**
+		 * Log to console, if LOGGING_ENABLED = true and specified log type
+		 * is enabled (see LOG_TYPES_ENABLED). If not specified, assumes
+		 * log type of "log"
+		 *
+		 * @var [Array] message (all except last argument unless only one
+		 *      argument is supplied or last argument is not one of the
+		 *      recognized log types in LOG_TYPES_ALL)
+		 * @var string logType Log type/severity (last argument)
+		 */
+		log: function (message, logType) {
 
-				var argsArray = $.makeArray(arguments);
-				var logItems = argsArray.slice(0, argsArray.length - 1);
-				var logType = argsArray[argsArray.length - 1];
+			if (Logger.LOGGING_ENABLED !== true || typeof console != 'object') return;
 
-				if (typeof logType === 'undefined') {
-					// Default log type
-					logType = 'log';
-				}
+			var argsArray = $.makeArray(arguments);
+			var logItems = argsArray.slice(0, argsArray.length - 1);
+			var logType = argsArray[argsArray.length - 1];
 
-				if (!$.inArray(logType, LOG_TYPES_ALL)) {
-					// Last argument is a log item, not the log type to use
-					logType = 'log';
-					logItems = argsArray;
-				}
-
-				if (!$.inArray(logType, LOG_TYPES_ENABLED)) {
-					// LOGS_ENABLED specifies to ignore this log type
-					return;
-				}
-
-				switch (logType) {
-					case 'error':
-						console.error.apply(console, logItems);
-						break;
-					case 'warning':
-						console.warn.apply(console, logItems);
-						break;
-					case 'info':
-						console.info.apply(console, logItems);
-						break;
-					case 'log':
-						console.warn.apply(console, logItems);
-						break;
-					case 'debug':
-						console.log.apply(console, logItems);
-						break;
-					default:
-						console.warn('Tagmarks Logger - Unknown logType',
-							logType);
-						console.log.apply(console, argsArray);
-				}
-			},
-
-			jqueryAjaxErrorHandler: function (jqXHR, textStatus, errorThrown) {
-				Logger.log('Tagmarks Logger jQuery AJAX error handler', {
-					jqXHR: jqXHR,
-					textStatus: textStatus,
-					errorThrown: errorThrown
-				}, 'error');
+			if (typeof logType === 'undefined') {
+				// Default log type
+				logType = 'log';
 			}
-		}
 
-	})();
+			if (!$.inArray(logType, Logger.LOG_TYPES_ALL)) {
+				// Last argument is a log item, not the log type to use
+				logType = 'log';
+				logItems = argsArray;
+			}
+
+			if (!$.inArray(logType, Logger.LOG_TYPES_ENABLED)) {
+				// LOGS_ENABLED specifies to ignore this log type
+				return;
+			}
+
+			switch (logType) {
+				case 'error':
+					console.error.apply(console, logItems);
+					break;
+				case 'warning':
+					console.warn.apply(console, logItems);
+					break;
+				case 'info':
+					console.info.apply(console, logItems);
+					break;
+				case 'log':
+					console.warn.apply(console, logItems);
+					break;
+				case 'debug':
+					console.log.apply(console, logItems);
+					break;
+				default:
+					console.warn('Tagmarks Logger - Unknown logType', logType);
+					console.log.apply(console, argsArray);
+			}
+		},
+
+		jqueryAjaxErrorHandler: function (jqXHR, textStatus, errorThrown) {
+			Logger.log('Tagmarks Logger jQuery AJAX error handler', {
+				jqXHR: jqXHR,
+				textStatus: textStatus,
+				errorThrown: errorThrown
+			}, 'error');
+		}
+	};
+
 
 	var Defaults = {
 		ThumbnailSize: {width: 319, height: 179},
@@ -188,7 +186,7 @@ var Tagmarks = (function () {
 				}
 			}
 
-		})();
+		}());
 
 		var Tags = (function () {
 			var tags = [];
@@ -223,7 +221,7 @@ var Tagmarks = (function () {
 			return {
 				set: function (tagsData) {
 					tags = tagsData;
-					$.each(tags, function(idx, tag) {
+					$.each(tags, function (idx, tag) {
 						tagsById[tag.id_name] = tag;
 					});
 					sort();
@@ -231,8 +229,8 @@ var Tagmarks = (function () {
 				get: function () {
 					return tags;
 				},
-				getIds: function() {
-					return tags.map(function(tag) {
+				getIds: function () {
+					return tags.map(function (tag) {
 						return tag.id_name
 					});
 				},
@@ -250,7 +248,7 @@ var Tagmarks = (function () {
 				}
 			}
 
-		})();
+		}());
 
 		var Settings = (function () {
 			var settings = {};
@@ -262,7 +260,7 @@ var Tagmarks = (function () {
 					return settings;
 				}
 			}
-		})();
+		}());
 
 		var State = (function () {
 
@@ -272,12 +270,13 @@ var Tagmarks = (function () {
 
 			return {
 				set: function (stateData) {
-					$.each(stateData, function(key, val) {
+					$.each(stateData, function (key, val) {
 						if (key in state) {
 							// state variables for application
 							state[key] = val;
 						} else {
-							Logger.log('Model.State.set - Unrecognized state data key:', key, 'warning');
+							Logger.log('Model.State.set - Unrecognized state data key:',
+								key, 'warning');
 						}
 					});
 				},
@@ -300,22 +299,81 @@ var Tagmarks = (function () {
 				}
 			}
 
-		})();
+		}());
+
+		var URI = {
+
+			tldInfoList: [],
+			tldInfoByTLD: {},
+			tldMaxWeight: 0,
+
+			normalizeTLD: function (tld) {
+				return tld.replace('.', '').toLowerCase();
+			},
+
+			/**
+			 * @param {string} key
+			 * @param {object} obj
+			 * @returns {*|null} The value corresponding to obj.key, or NULL
+			 *      if key doesn't exist in obj or obj is not an object.
+			 */
+			_getValIfKey: function (key, obj) {
+				return (typeof obj === 'object' && key in obj) ?
+					obj[key]: null;
+			},
+
+			/**
+			 *
+			 * @param {Array} pTldInfoList
+			 */
+			setTLDs: function (pTldInfoList) {
+				URI.tldInfoList = pTldInfoList;
+
+				$.each(URI.tldInfoList, function (idx, tldInfo) {
+					var normTLD = URI.normalizeTLD(tldInfo.TLD);
+
+					URI.tldInfoByTLD[normTLD] = tldInfo;
+
+					if (tldInfo.Weight > URI.tldMaxWeight) {
+						URI.tldMaxWeight = tldInfo.Weight;
+					}
+				});
+
+				$.each(URI.tldInfoByTLD, function (normTLD, tldInfo) {
+					tldInfo.FractionalWeight = tldInfo.Weight / URI.tldMaxWeight;
+				});
+			},
+
+			getTLDs: function () {
+				return URI.tldInfoByTLD;
+			},
+
+			getTLD: function (tld) {
+				var normTLD = URI.normalizeTLD(tld);
+				return URI._getValIfKey(normTLD, URI.tldInfoByTLD);
+			},
+
+			getMaxWeight: function () {
+				return URI.tldMaxWeight;
+			}
+		};
 
 		return {
 			Settings: Settings,
 			Sites: Sites,
 			Tags: Tags,
 			State: State,
+			URI: URI,
 
-			init: function(pSettings, pSites, pTags) {
+			init: function(pSettings, pSites, pTags, pTlds) {
 				Settings.set(pSettings);
 				Sites.set(pSites);
 				Tags.set(pTags);
+				URI.setTLDs(pTlds);
 			}
 		}
 
-	})();
+	}());
 
 	var View = (function () {
 
@@ -554,7 +612,7 @@ var Tagmarks = (function () {
 				}
 			}
 
-		})();
+		}());
 
 		var TagIndicators = (function () {
 
@@ -604,7 +662,7 @@ var Tagmarks = (function () {
 				}
 			}
 
-		})();
+		}());
 
 		var Dialogs = {
 
@@ -619,7 +677,7 @@ var Tagmarks = (function () {
 						}
 					}
 				}
-			})(),
+			}()),
 
 			AddEditSite: (function () {
 
@@ -703,7 +761,7 @@ var Tagmarks = (function () {
 					}
 				}
 
-			})()
+			}())
 
 		};
 
@@ -765,7 +823,7 @@ var Tagmarks = (function () {
 			}
 		}
 
-	})();
+	}());
 
 
 
@@ -841,8 +899,14 @@ var Tagmarks = (function () {
 		var onSuggestionClick = function($event) {
 			var $suggestion = $($event.target);
 			var clickedItemQuery = $suggestion.attr('q');
-			$webSearchInput.val(clickedItemQuery);
-			$webSearchForm.submit();
+			var clickedItemURL = $suggestion.attr('url');
+			if (typeof clickedItemQuery === 'string' && clickedItemQuery.length) {
+				$webSearchInput.val(clickedItemQuery);
+				$webSearchForm.submit();
+			} else if (typeof clickedItemURL === 'string' && clickedItemURL.length) {
+				top.location.href = clickedItemURL;
+			}
+
 		}
 
 		var google204Fetched = false;
@@ -885,7 +949,7 @@ var Tagmarks = (function () {
 				var tagmarksSiteMatches = [];
 				var sites = Model.Sites.get();
 				$.each(sites, function (idx, site) {
-					if (site.name.toLowerCase().indexOf(q.toLowerCase()) !== -1) {
+					if (site.name.toLowerCase().indexOf(q.toLowerCase()) === 0) {
 						tagmarksSiteMatches.push(site);
 					}
 				});
@@ -902,6 +966,8 @@ var Tagmarks = (function () {
 				qType = 'web-search'
 			}
 
+
+
 			$.ajax({
 				url: 'search_suggestions.php',
 				type: 'GET',
@@ -911,13 +977,33 @@ var Tagmarks = (function () {
 					if (typeof response == 'object' && 'length' in response) {
 
 						$suggestions.html('');
+
+						$.each(tagmarksSiteMatches, function(idx, site) {
+							var $suggestion = $(''
+								+'<div class="site">'
+								+   htmlEntities(site.name)
+								+'</div>');
+							$suggestion.attr('url', site.url);
+							$suggestions.append($suggestion);
+
+							$suggestion.on('mouseenter', onSuggestionMouseenter);
+							$suggestion.on('mouseleave', onSuggestionMouseleave);
+							$suggestion.on('click', onSuggestionClick);
+						});
+
+
 						$.each(response, function(idx, item) {
-							var $suggestion = $('<div><span>'+htmlEntities(item.substr(0, q.length))+'</span>'+htmlEntities(item.substr(q.length))+'</div>');
+							var $suggestion = $(''
+								+'<div>'
+								+   '<span>'
+								+       htmlEntities(item.substr(0, q.length))
+								+   '</span>'
+								+   htmlEntities(item.substr(q.length))
+								+'</div>');
 							$suggestion.attr('q', item);
 							$suggestions.append($suggestion);
 
-							$suggestion.on('mouseenter',
-								onSuggestionMouseenter);
+							$suggestion.on('mouseenter', onSuggestionMouseenter);
 							$suggestion.on('mouseleave', onSuggestionMouseleave);
 							$suggestion.on('click', onSuggestionClick);
 						});
@@ -953,6 +1039,12 @@ var Tagmarks = (function () {
 					selSearchIdx--;
 				}
 			} else if (e.keyCode == KEYCODE_ENTER) {
+				var $selSuggestion = $suggestions.find('div.selected');
+				if ($selSuggestion.length) {
+					$selSuggestion.addClass('active');
+					$selSuggestion.trigger('click');
+					e.preventDefault();
+				}
 				return;
 			}
 
@@ -964,9 +1056,13 @@ var Tagmarks = (function () {
 					if ($selItem.length) {
 						$selItem.addClass('selected');
 						var selItemQuery = $selItem.attr('q');
-						$webSearchInput.val(selItemQuery);
-						$webSearchInput.get(0).selectionStart = selItemQuery.length;
-						$webSearchInput.get(0).selectionEnd = selItemQuery.length;
+						if (typeof selItemQuery === 'string' && selItemQuery.length) {
+							$webSearchInput.val(selItemQuery);
+							$webSearchInput[0].selectionStart =
+								selItemQuery.length;
+							$webSearchInput[0].selectionEnd =
+								selItemQuery.length;
+						}
 					} else {
 						selSearchIdx = 0;
 					}
@@ -1025,8 +1121,11 @@ var Tagmarks = (function () {
 
 		if (whichResponse == 'dataResponse') {
 
+			var mainData = response.data;
+			var tldData = response.tlds;
 
-			Model.init(response.settings, response.sites, response.tags);
+			Model.init(mainData.settings, mainData.sites, mainData.tags, tldData);
+
 
 			View.init();
 
@@ -1064,6 +1163,8 @@ var Tagmarks = (function () {
 
 	// Tagmarks public interface
 	return {
+		Model: Model,
+
 		getSites: function() {
 			return Model.Sites.get();
 		},
@@ -1109,4 +1210,4 @@ var Tagmarks = (function () {
 		}
 	}
 
-})();
+}());

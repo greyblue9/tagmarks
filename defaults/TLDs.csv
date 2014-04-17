@@ -1,0 +1,268 @@
+TLD,Use,Pages,Weight
+.com,Commercial,4860000000,1000
+.org,Noncommercial,1950000000,401
+.edu,US accredited postsecondary institutions,1550000000,319
+.gov,United States Government,1060000000,218
+.uk,United Kingdom,473000000,97
+.net,Network services,206000000,42
+.ca,Canada,165000000,34
+.de,Germany,145000000,30
+.jp,Japan,139000000,29
+.fr,France,96700000,20
+.au,Australia,91000000,19
+.us,United States,68300000,14
+.ru,Russian Federation,67900000,14
+.ch,Switzerland,62100000,13
+.it,Italy,55200000,11
+.nl,Netherlands,45700000,9
+.se,Sweden,39000000,8
+.no,Norway,32300000,7
+.es,Spain,31000000,6
+.mil,United States Military,28400000,6
+.fi,Finland,28100000,6
+.cn,China,26700000,5
+.br,Brazil,25800000,5
+.be,Belgium,25100000,5
+.at,Austria,23000000,5
+.info,Information,21900000,5
+.pl,Poland,20100000,4
+.dk,Denmark,19700000,4
+.cz,Czech Republic,18800000,4
+.cl,Chile,18500000,4
+.hu,Hungary,18500000,4
+.nz,New Zealand,18500000,4
+.il,Israel,17800000,4
+.ie,Ireland,17000000,3
+.za,South Africa,16400000,3
+.tw,Taiwan,14000000,3
+.kr,"Korea, Republic of",13700000,3
+.mx,Mexico,13700000,3
+.gr,Greece,13500000,3
+.ar,Argentina,10700000,2
+.hk,Hong Kong,9510000,2
+.in,India,9330000,2
+.pt,Portugal,9100000,2
+.sg,Singapore,8770000,2
+.tr,Turkey,8310000,2
+.sk,Slovak Republic,8040000,2
+.ro,Romania,7990000,2
+.tv,Tuvalu,7170000,1
+.lv,Latvia,6970000,1
+.biz,Businesses,6870000,1
+.ua,Ukraine,6820000,1
+.ee,Estonia,6790000,1
+.th,Thailand,6470000,1
+.hr,Croatia/Hrvatska,6080000,1
+.lt,Lithuania,6040000,1
+.is,Iceland,5310000,1
+.nu,Niue,5100000,1
+.vu,Vanuatu,5050000,1
+.lu,Luxembourg,4940000,1
+.my,Malaysia,4610000,1
+.fm,"Micronesia, Federal State of",4580000,1
+.si,Slovenia,4420000,1
+.co,Colombia,4270000,1
+.ni,Nicaragua,4240000,1
+.ph,Philippines,4080000,1
+.cc,Cocos (Keeling) Islands,4050000,1
+.li,Liechtenstein,3990000,1
+.bg,Bulgaria,3480000,1
+.ae,United Arab Emirates,3310000,1
+.yu,Yugoslavia,3270000,1
+.md,"Moldova, Republic of",3230000,1
+.name,Individuals,3220000,1
+.pk,Pakistan,3180000,1
+.ve,Venezuela,3050000,1
+.ma,Morocco,3030000,1
+.pw,Palau,3010000,1
+.ws,Western Samoa,3000000,1
+.eg,Egypt,2990000,1
+.mk,"Macedonia, The Former Yugoslav Republic of",2980000,1
+.ir,"Iran, Islamic Republic of",2940000,1
+.id,Indonesia,2850000,1
+.bz,Belize,2790000,1
+.sa,Saudi Arabia,2770000,1
+.ba,Bosnia and Herzegovina,2760000,1
+.pe,Peru,2740000,1
+.kz,Kazakhstan,2680000,1
+.tc,Turks and Caicos Islands,2610000,1
+.uz,Uzbekistan,2610000,1
+.ec,Ecuador,2580000,1
+.by,Belarus,2540000,1
+.cy,Cyprus,2500000,1
+.st,Sao Tome and Principe,2490000,1
+.to,Tonga,2490000,1
+.vn,Vietnam,2490000,1
+.ge,Georgia,2480000,1
+.tk,Tokelau,2170000,0
+.ms,Montserrat,2160000,0
+.am,Armenia,2080000,0
+.ac,Ascension Island,2060000,0
+.cr,Costa Rica,2060000,0
+.cu,Cuba,2040000,0
+.uy,Uruguay,2020000,0
+.pr,Puerto Rico,1920000,0
+.np,Nepal,1910000,0
+.lb,Lebanon,1890000,0
+.cx,Christmas Island,1830000,0
+.lk,Sri Lanka,1770000,0
+.mt,Malta,1650000,0
+.na,Namibia,1650000,0
+.bo,Bolivia,1590000,0
+.do,Dominican Republic,1510000,0
+.kg,Kyrgyzstan,1440000,0
+.coop,Cooperative associations,1360000,0
+.az,Azerbaijan,1340000,0
+.sv,El Salvador,1320000,0
+.ag,Antigua and Barbuda,1310000,0
+.mo,Macau,1310000,0
+.as,American Samoa,1220000,0
+.tt,Trinidad and Tobago,1170000,0
+.mn,Mongolia,1160000,0
+.tn,Tunisia,1060000,0
+.pa,Panama,1040000,0
+.py,Paraguay,962000,0
+.sc,Seychelles,949000,0
+.la,Lao People’s Democratic Republic,932000,0
+.gt,Guatemala,904000,0
+.vg,"Virgin Islands, British",882000,0
+.mp,Northern Mariana Islands,861000,0
+.va,Holy See (Vatican City State),852000,0
+.tf,French Southern Territories,777000,0
+.gs,South Georgia and the South Sandwich Islands,772000,0
+.mu,Mauritius,651000,0
+.hn,Honduras,628000,0
+.fo,Faroe Islands,623000,0
+.jo,Jordan,601000,0
+.ps,Palestinian Territories,559000,0
+.sh,Saint Helena,547000,0
+.gl,Greenland,526000,0
+.zw,Zimbabwe,507000,0
+.sn,Senegal,503000,0
+.cd,"Congo, The Democratic Republic of the",475000,0
+.fj,Fiji,466000,0
+.nr,Nauru,466000,0
+.ki,Kiribati,427000,0
+.tz,Tanzania,405000,0
+.al,Albania,389000,0
+.ly,Libyan Arab Jamahiriya,388000,0
+.mm,Myanmar,367000,0
+.kw,Kuwait,356000,0
+.aero,Air-transport industry,342000,0
+.bd,Bangladesh,342000,0
+.ug,Uganda,337000,0
+.dz,Algeria,326000,0
+.zm,Zambia,324000,0
+.gg,Guernsey,322000,0
+.ad,Andorra,321000,0
+.mc,Monaco,307000,0
+.ke,Kenya,301000,0
+.jm,Jamaica,290000,0
+.mz,Mozambique,288000,0
+.museum,Museums,280000,0
+.im,Isle of Man,276000,0
+.nc,New Caledonia,265000,0
+.kh,Cambodia,262000,0
+.qa,Qatar,259000,0
+.mg,Madagascar,255000,0
+.bw,Botswana,244000,0
+.sr,Suriname,242000,0
+.bh,Bahrain,241000,0
+.pf,French Polynesia,240000,0
+.bf,Burkina Faso,239000,0
+.vc,Saint Vincent and the Grenadines,239000,0
+.bm,Bermuda,238000,0
+.sm,San Marino,225000,0
+.pg,Papua New Guinea,211000,0
+.mr,Mauritania,210000,0
+.om,Oman,204000,0
+.je,Jersey,202000,0
+.vi,"Virgin Islands, U.S.",202000,0
+.hm,Heard and McDonald Islands,194000,0
+.cg,"Congo, Republic of",193000,0
+.gi,Gibraltar,193000,0
+.ky,Cayman Islands,172000,0
+.bn,Brunei Darussalam,157000,0
+.ao,Angola,153000,0
+.tj,Tajikistan,153000,0
+.ne,Niger,151000,0
+.tp,East Timor,151000,0
+.dj,Djibouti,150000,0
+.ai,Anguilla,149000,0
+.re,Reunion Island,146000,0
+.et,Ethiopia,142000,0
+.tm,Turkmenistan,136000,0
+.bb,Barbados,131000,0
+.rw,Rwanda,131000,0
+.mv,Maldives,125000,0
+.bt,Bhutan,123000,0
+.cm,Cameroon,119000,0
+.sy,Syrian Arab Republic,115000,0
+.io,British Indian Ocean Territory,108000,0
+.gh,Ghana,107000,0
+.pro,Credentialed professionals,101000,0
+.af,Afghanistan,101000,0
+.ng,Nigeria,101000,0
+.ci,Cote d’Ivoire,95200,0
+.ye,Yemen,93800,0
+.mw,Malawi,87000,0
+.lc,Saint Lucia,86400,0
+.cv,Cape Verde,81900,0
+.ls,Lesotho,81900,0
+.sz,Swaziland,81500,0
+.pn,Pitcairn Island,80900,0
+.an,Netherlands Antilles,78100,0
+.ml,Mali,73500,0
+.gy,Guyana,68700,0
+.bi,Burundi,60600,0
+.gm,Gambia,59300,0
+.nf,Norfolk Island,54900,0
+.eu,European Union,45100,0
+.ck,Cook Islands,43300,0
+.bs,Bahamas,37700,0
+.bj,Benin,36200,0
+.aq,Antarctica,36000,0
+.tg,Togo,36000,0
+.aw,Aruba,34400,0
+.dm,Dominica,30100,0
+.mq,Martinique,19000,0
+.gn,Guinea,18700,0
+.tl,Timor-Leste,18100,0
+.ga,Gabon,17900,0
+.ht,Haiti,17700,0
+.er,Eritrea,15800,0
+.sl,Sierra Leone,13800,0
+.gd,Grenada,13600,0
+.gu,Guam,12800,0
+.travel,Travel industry,12400,0
+.sb,Solomon Islands,11800,0
+.sd,Sudan,11700,0
+.fk,Falkland Islands (Malvinas),10500,0
+.kn,Saint Kitts and Nevis,9830,0
+.gq,Equatorial Guinea,1450,0
+.gp,Guadeloupe,980,0
+.gf,French Guiana,926,0
+.cf,Central African Republic,703,0
+.jobs,Human resource managers,695,0
+.lr,Liberia,588,0
+.km,Comoros,533,0
+.so,Somalia,512,0
+.td,Chad,332,0
+.cs,Serbia and Montenegro,316,0
+.gb,United Kingdom,186,0
+.pm,Saint Pierre and Miquelon,184,0
+.arpa,Technical infrastructure on the web,162,0
+.um,United States Minor Outlying Islands,140,0
+.iq,Iraq,133,0
+.kp,"Korea, Democratic People’s Republic",122,0
+.cat,Catalan linguistic and cultural community,121,0
+.ap,African Regional Industrial Property Organization,68,0
+.bv,Bouvet Island,55,0
+.eh,Western Sahara,53,0
+.mh,Marshall Islands,53,0
+.mobi,Consumers and providers of mobile products and services,37,0
+.sj,Svalbard and Jan Mayen Islands,37,0
+.yt,Mayotte,34,0
+.wf,Wallis and Futuna Islands,30,0
+.ax,Aland Islands,28,0
+.gw,Guinea-Bissau,26,0

@@ -1,6 +1,9 @@
 <?php
 
 
+//define('SUGGESTIONS_PROVIDER', 'duckduckgo');
+
+//urlencode()
 
 $query = $_GET['q'];
 

@@ -1,0 +1,11 @@
+Notes for TagMarks
+
+Tag ideas:
+
+	"In progress/ Waiting/ Limbo" tag?
+
+Tag notes:
+
+	If you don't include a priority, the tag is assummed to have the lowest possible priority.
+	If two or more tasks have the same priority, they will appear in alphabetical order.
+

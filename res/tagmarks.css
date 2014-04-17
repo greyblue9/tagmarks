@@ -150,8 +150,26 @@ body > #left .tag.selected:hover {
 	cursor: pointer;
 }
 
+#web_search_bar span.suggestions_pixel > #web_search_suggestions > div.site {
+	font-weight: bold;
+	background-color: #f8e0cb;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #eeb480;
+}
+
+#web_search_bar span.suggestions_pixel > #web_search_suggestions > div.site.selected {
+	background-color: #e16b00;
+	color: #fff;
+}
+
+#web_search_bar span.suggestions_pixel > #web_search_suggestions > div.site.active {
+	background-color: #000;
+	color: #fff;
+}
+
 #web_search_bar span.suggestions_pixel > #web_search_suggestions > div.selected {
-	background: rgb(239, 239, 239);
+	background-color: rgb(239, 239, 239);
 }
 
 #web_search_bar span.suggestions_pixel > #web_search_suggestions > div > span {
@@ -327,9 +345,9 @@ a.thumbnail_link > div.tag_strip > div.clear {
 	margin-top: -200px;
 	width: 500px;
 	margin-left: -250px;
-	box-shadow: 0px 0px 20px rgb(0, 0, 0);
+	box-shadow: 0 0 20px rgb(0, 0, 0);
 	border: 1px solid rgb(0, 0, 0);
-	background: none repeat scroll 0px 0px rgba(0, 0, 0, 0.95);
+	background-color: rgba(0, 0, 0, 0.95);
 }
 
 #add_site_dialog > .titlebar {
@@ -337,10 +355,10 @@ a.thumbnail_link > div.tag_strip > div.clear {
 	font-weight: bold;
 	height: 24px;
 	line-height: 24px;
-	padding: 0px 6px;
+	padding: 0 6px;
 	background: url(img/button_bg.png) repeat-x scroll center top rgb(103, 112, 150);
 	border-bottom: 1px solid rgb(0, 0, 0);
-	box-shadow: 0px 2px 2px rgb(53, 58, 83);
+	box-shadow: 0 2px 2px rgb(53, 58, 83);
 	cursor: default;
 	font-size: 18px;
 }
@@ -375,7 +393,7 @@ a.thumbnail_link > div.tag_strip > div.clear {
 }
 
 #add_site_dialog table tr > td > span.tag {
-	padding: 0px 6px;
+	padding: 0 6px;
 	font-weight: bold;
 	display: inline-block;
 	height: 25px;

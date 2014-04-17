@@ -8,6 +8,32 @@ require('include/common.inc.php');
 Setup::readIniFiles();
 
 
+$tldData = array();
+$columnHeaders = array();
+$csv = fopen(TLDS_LIST_FILENAME, "r");
+if ($csv !== FALSE) {
+	$rowIdx = 0;
+	while (($row = fgetcsv($csv, 1000, ',', '"', '"')) !== FALSE) {
+
+		if ($rowIdx === 0) {
+			$columnHeaders = $row;
+		} else {
+			$tldInfo = array();
+			foreach ($row as $idx => $val) {
+				$val = preg_replace('/\p{Cc}+/u', '', $val);
+				$tldInfo[$columnHeaders[$idx]] = $val;
+			}
+
+			$tldData[] = $tldInfo;
+		}
+
+		$rowIdx++;
+	}
+	fclose($csv);
+}
+
+
+
 
 function saveSites($sites)
 {
@@ -81,12 +107,17 @@ if ($method == 'POST') {
 
 	if ($secure_vars) {
 		// The variable $data_with_secvars will contain any secure data in plaintext
-		$responseArray = Common::getDeepVariableCopy($main_data);
-		Setup::replaceSecureVars($responseArray, $secure_vars);
+		$data = Common::getDeepVariableCopy($main_data);
+		Setup::replaceSecureVars($data, $secure_vars);
 	}
 	else {
-		$responseArray = $main_data;
+		$data = $main_data;
 	}
+
+	$responseArray = array(
+		'data' => $data,
+		'tlds' => $tldData
+	);
 
 
 } else {

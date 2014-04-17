@@ -23,8 +23,8 @@ class Setup {
 
 	static function readIniFiles()
 	{
-		$defaults_ini = parse_ini_file('defaults/tagmarks.ini.php', false);
-		$user_ini = parse_ini_file(PRIVATE_DIR_PATH.'/tagmarks.ini.php', false);
+		$defaults_ini = parse_ini_file('defaults/tagmarks.ini', false);
+		$user_ini = parse_ini_file(PRIVATE_DIR_PATH.'/tagmarks.ini', false);
 
 		$inidata = self::iniMerge($defaults_ini, $user_ini);
 
@@ -35,6 +35,10 @@ class Setup {
 		define('SECURE_DATA_SCRIPT_FILEPATH', $inidata['secure_vars_filename']);
 		define('SECURE_DATA_SCRIPT_FILENAME', $inidata['secure_vars_relative_path']
 			.'/'.$inidata['secure_vars_filename']);
+
+		define('TLDS_LIST_FILEPATH', $inidata['tld_list_filename']);
+		define('TLDS_LIST_FILENAME', $inidata['tld_list_relative_path']
+			.'/'.$inidata['tld_list_filename']);
 
 		define('JSON_INDENTED_OUTPUT', $inidata['json_indented_output']);
 
