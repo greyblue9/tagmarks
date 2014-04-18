@@ -1,6 +1,5 @@
 <?php
 
-namespace Tagmarks;
 
 
 define('CR', "\r");
@@ -8,7 +7,7 @@ define('LF', "\n");
 define('CRLF', "\r\n");
 
 
-if (is_dir(__DIR__.'/../private')) {
+if (is_dir(__DIR__.'/../private/tagmarks')) {
 	define('PRIVATE_DIR_PATH', '../private/tagmarks');
 } else if (is_dir(__DIR__.'/../../private')) {
 	define('PRIVATE_DIR_PATH', '../../private/tagmarks');
