@@ -13,7 +13,7 @@ require_once('include/Tagmarks/common.inc');
 
 $dataSource = new DataSource(
 	TAGMARKS_PRIVATE_DIR.'/data.json',
-	TAGMARKS_PRIVATE_DIR.'/state.dat'
+	TAGMARKS_PRIVATE_DIR.'/state.json'
 );
 
 $method = $_SERVER['REQUEST_METHOD'];

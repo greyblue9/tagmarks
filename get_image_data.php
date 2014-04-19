@@ -2,7 +2,8 @@
 
 namespace Tagmarks;
 
-require_once('include/common.inc.php');
+require_once('include/common.inc');
+require_once('include/Tagmarks/common.inc');
 
 
 $imageUrl = $_GET['image_url'];
@@ -26,7 +27,7 @@ $headerLines = explode("\r\n", trim(substr($response, 0, $headerSize)));
  * 'Status-Line' array key. Blank lines (like the \r\n\r\n that separates the
  * header section from the body section) are not included in the array.
 */
-$headers = array();
+$headers = [];
 
 foreach ($headerLines as $line) {
 	if (strpos($line, 'HTTP/') === 0) {
@@ -47,13 +48,12 @@ $contentSizeKBytes = $contentSizeBytes? $contentSizeBytes / 1024: null;
 
 $contentData = substr($response, $headerSize);
 
-$imageSizeExtraInfo = array();
+$imageSizeExtraInfo = [];
 $imageSize = getimagesizefromstring($contentData, $imageSizeExtraInfo);
-$iptc = array();
+$iptc = [];
 if (isset($imageSizeExtraInfo['APP13'])) {
 	$iptc = iptcparse($imageSizeExtraInfo['APP13']);
-	$iptcHeaderArray = array
-	(
+	$iptcHeaderArray = [
 		'1#090' => 'Envelope.CharacterSet',
 		'2#005' => 'ObjectName',
 		'2#015' => 'Category',
@@ -79,7 +79,7 @@ if (isset($imageSizeExtraInfo['APP13'])) {
 		'2#118' => 'Contact',
 		'2#120' => 'Caption',
 		'2#122' => 'CaptionWriter'
-	);
+	];
 	if (is_array($iptc)) {
 		foreach ($iptc as $origKey => $value) {
 			if (isset($iptcHeaderArray[$origKey])) {
@@ -97,44 +97,43 @@ $mimeType = image_type_to_mime_type($imagetypeConst);
 $extension = image_type_to_extension($imagetypeConst);
 
 $exifData = null;
-$tempfile = file_put_contents('testimage', $contentData);
-if (function_exists('exif_read_data')) {
+$tempfileBytesWritten = file_put_contents('testimage', $contentData);
+
+if ($tempfileBytesWritten !== false && function_exists('exif_read_data')) {
 	$exifData = @exif_read_data('testimage', 'ANY_TAG', true);
 } else {
-	$exifData = array('error' => 'PHP exif extension not loaded');
+	$exifData = ['error' => 'PHP exif extension not loaded'];
 }
 
 
-$outputArray = array(
+$outputArray = [
 	'url' => $imageUrl,
 	'headers' => $headers,
 	'http_status_line' => $headers['Status-Line'],
 	'content_type' => $contentType,
 	'size_bytes' => $contentSizeBytes,
 	'size_kbytes' => $contentSizeKBytes,
-	'size_string' => Common::formatSizeUnits($contentSizeBytes),
-	'dimensions' => array(
+	'size_string' => Utils::formatSizeUnits($contentSizeBytes),
+	'dimensions' => [
 		'width' => $imageSize[0],
 		'height' => $imageSize[1],
 		'mime_type' => $imageSize['mime'],
 		'channels' => isset($imageSize['channels'])? $imageSize['channels']: null,
 		'bits_per_color' => $imageSize['bits'],
-		'imagetype' => array(
+		'imagetype' => [
 			'constant' => $imagetypeConst,
 			'mime_type' => $mimeType,
 			'extension' => $extension
-		)
-	),
+		]
+	],
 	'iptc' => count($iptc)? $iptc: null,
 	'exif' => $exifData? $exifData: null
-);
+];
 
 header('Content-Type: application/json; charset=utf-8');
-print(Json::formatJson(json_encode($outputArray, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES)));
+print(Json::encode($outputArray));
+exit();
 
-
-/*
-print('<img src="data:'.$contentType.';base64,'.base64_encode($contentData).'" />');*/
 
 
 

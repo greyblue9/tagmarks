@@ -1,14 +1,21 @@
 <?php
 
+namespace Tagmarks;
 
-//define('SUGGESTIONS_PROVIDER', 'duckduckgo');
+require_once('include/common.inc');
+require_once('include/Tagmarks/common.inc');
 
-//urlencode()
+// TODO: Support DuckDuckGo suggestions API
 
 $query = $_GET['q'];
 
-$client = 'ie8'; // using now for compatibility; doesn't work with custom value?
-$url = 'http://www.google.com/complete/search?hl=en-US&q='.urlencode($query).'&client='.$client.'&inputencoding=UTF-8&outputencoding=UTF-8';
+$client = 'ie8'; // using now for compatibility; doesn't work with custom value
+$url = 'http://www.google.com/complete/search'.
+	'?hl=en-US'.
+	'&q='.urlencode($query).
+	'&client='.$client.
+	'&inputencoding=UTF-8'.
+	'&outputencoding=UTF-8';
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
@@ -24,24 +31,30 @@ $header = trim(substr($response, 0, $headerSize));
 $contentData = substr($response, $headerSize);
 
 
-$xml = new SimpleXMLElement($contentData);
+$xml = new \SimpleXMLElement($contentData);
 
 
 $idx = 0;
 
-$output = array();
+$output = [];
 
+// FIXME: Remove magic method use
 while (isset($xml->Section->Item[$idx])) {
 	$item = $xml->Section->Item[$idx];
 
 	$idx++;
 
-	if (isset($item->Url)) continue;
+	if (isset($item->Url)) {
+		continue;
+	}
 	$text = $item->Text;
 	$output[] = (string)$text;
 }
 
 
-print(json_encode($output, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES));
 
+header('Content-Type: application/json;charset=UTF-8');
 
+$outputJson = Json::encode($output);
+print($outputJson);
+exit();

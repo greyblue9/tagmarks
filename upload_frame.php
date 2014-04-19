@@ -2,25 +2,30 @@
 
 namespace Tagmarks;
 
-require_once('include/common.inc.php');
-
-header('Content-Type: text/html; charset=utf-8');
-
+require_once('include/common.inc');
+require_once('include/Tagmarks/common.inc');
 
 
-Setup::readIniFiles();
 
-if (CACHE_LEVEL == 'production') {
-	header('Cache-Control: max-age=86400;public');
-}
-else {
-	header('Cache-Control: no-cache');
-}
+$setup = new Setup(
+	WEB_ROOT.'/defaults', // defaults dir
+	TAGMARKS_PRIVATE_DIR // private data dir
+);
+
+
+$cacheControlValue = CACHE_LEVEL === 'production'?
+	'max-age=86400;public':
+	'no-cache';
 
 $debugMode = DEBUG_MODE? true: false;
 
+$allowedMimeTypes = [
+	'image/jpeg',
+	'image/png',
+	'image/gif'
+];
 
-$uploadInfo = array();
+$uploadInfo = [];
 
 
 if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
@@ -30,7 +35,7 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 
 	$sizeInfo = getimagesize($tempFilename);
 	$mime = image_type_to_mime_type($sizeInfo[2]);
-	if (!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
+	if (!in_array($mime, $allowedMimeTypes)) {
 		unlink($tempFilename);
 		header('Location: upload_frame.php?error=unsupported_mime');
 		exit;
@@ -42,9 +47,17 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 
 	$ext = image_type_to_extension($sizeInfo[2], true); // include dot
 	$newFilename = 'thumbsets/uploaded/'.uniqid('uploaded_thumb_').$ext;
-	$result = move_uploaded_file($tempFilename, $newFilename);
+	move_uploaded_file($tempFilename, $newFilename);
 
-	$uploadInfo = array(
+	/** @var array|null $error */
+	$error = error_get_last();
+	if ($error !== null) {
+		header('Content-Type: text/html;charset=UTF-8');
+		var_dump($error);
+		exit();
+	}
+
+	$uploadInfo = [
 		'upload_uri' => $newFilename,
 		'upload_url' => 'http://'.$_SERVER['HTTP_HOST'].'/'.$newFilename,
 		'width' => $sizeInfo[0],
@@ -52,8 +65,14 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 		'mime_type' => $mime,
 		'extension' => image_type_to_extension($sizeInfo[2], false),
 		'size_bytes' => $filesizeBytes
-	);
+	];
 }
+
+$uploadInfoJson = Json::encode($uploadInfo);
+
+
+header('Content-Type: text/html;charset=UTF-8');
+header("Cache-Control: {$cacheControlValue}");
 
 
 ?><!doctype html>
@@ -64,8 +83,9 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 		html {
 			margin: 0;
 		}
+
 		body {
-			background: none repeat scroll 0 0 #777777;
+			background-color: #777777;
 			color: #FFFFFF;
 			font-family: sans-serif;
 			font-size: 12px;
@@ -79,46 +99,51 @@ if (isset($_FILES) && isset($_FILES['thumbnail_file_upload'])) {
 			background: #414965;
 			height: 100%;
 		}
+
+		input[type=file] {
+			float: left;
+			width: 75%;
+			padding: 0;
+		}
+
+		button[type=submit] {
+			float: right;
+			width: 25%;
+			padding: 0;
+		}
+
+		div.clear {
+			clear: both;
+		}
 	</style>
 </head>
 <body>
 
 
-<form autocomplete="off" enctype="multipart/form-data" method="POST" action="upload_frame.php">
+<form
+	action="upload_frame.php"
+	method="POST"
+	enctype="multipart/form-data"
+	autocomplete="off">
 
-	<input type="file" name="thumbnail_file_upload" style="width: 75%; float: left; padding: 0px;">
+	<input type="file" name="thumbnail_file_upload">
+	<button type="submit">Upload</button>
 
-	<button style="width: 25%; float: right; padding: 0px;" type="submit">
-		Upload
-	</button>
-
-	<div style="clear: both"></div>
+	<div class="clear"></div>
 
 </form>
 
-<input type="hidden" id="upload_info" value="<?= htmlentities(json_encode($uploadInfo, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES)) ?>" />
+
+<input type="hidden"
+       id="upload_info"
+       value="<?= htmlentities($uploadInfoJson); ?>" />
 
 
-<? if ($debugMode): ?>
-
-	<!-- Debug mode (from "debug_mode" in tagmarks.ini.php) -->
-	<script type="text/javascript" src="res/jquery-2.0.3.min.js"></script>
-	<script type="text/javascript" src="res/jquery-ui-1.10.3.custom.min.js"></script>
-
-	<script type="text/javascript"
-	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-utils.js') ?>"></script>
-	<script type="text/javascript"
-	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks.js') ?>"></script>
-	<script type="text/javascript"
-	        src="<?= Common::getFilenameWithModifiedTime('res/tagmarks-upload-frame.js') ?>"></script>
-
-<? else: ?>
-
-	<!-- Debug mode off -->
-	<script type="text/javascript" src="min/g=tagmarks-all.js"></script>
-
-<? endif; ?>
-
+<script type="text/javascript" src="/res/jquery-2.0.3.js"></script>
+<script type="text/javascript" src="/res/jquery-ui-1.10.3.custom.js"></script>
+<script type="text/javascript" src="/res/tagmarks-utils.js"></script>
+<script type="text/javascript" src="/res/tagmarks.js"></script>
+<script type="text/javascript" src="/res/tagmarks-upload-frame.js"></script>
 
 </body>
 </html>

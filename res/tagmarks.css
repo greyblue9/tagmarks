@@ -1,6 +1,6 @@
 
 html {
-	background: #3161a3;
+	background: #3161a3 url(/res/img/blue_radial.jpg) fixed 0 0;
 	background-size: cover;
 }
 

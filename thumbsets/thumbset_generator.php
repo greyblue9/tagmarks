@@ -1,5 +1,7 @@
 <?php
 
+namespace Tagmarks;
+
 // Generates an "thumbset.json" file for your thumbnail set.
 // The script generally assumes it is located in the same place as the
 // folders for all thumbnail sets.
@@ -19,7 +21,8 @@
 // script (it was mostly written for my own benefit).
 
 
-require_once('../src/include/common.inc.php');
+require_once('../include/common.inc');
+require_once('../include/Tagmarks/common.inc');
 
 define('PATH_TO_THUMBSETS', __DIR__);
 
@@ -41,9 +44,9 @@ if (!isset($_POST['thumbset'])) {
 } else {
 
 	// Here we generate the thumbset.json file.
-	$data = array(
-		'items' => array()
-	);
+	$data = [
+		'items' => []
+	];
 
 	$path = $_POST['path'];
 	$set_name = $_POST['thumbset'];
@@ -77,9 +80,9 @@ if (!isset($_POST['thumbset'])) {
 					'&q='.urlencode($possible_site_name).
 					'&format=json';
 
-				$response = get_web_response($search_api_url);
+				$response = Utils::getHttpResponse($search_api_url);
 
-				$response_data = json_decode($response, true);
+				$response_data = Json::decode($response);
 				$resp_items = $response_data['items'];
 				foreach ($resp_items as $resp_item) {
 					if ($resp_item['kind'] == 'customsearch#result') {
@@ -90,23 +93,22 @@ if (!isset($_POST['thumbset'])) {
 				$urlsearch_query_count++;
 			}
 
-			$json_entry = array(
+			$json_entry = [
 				"thumbnail" => $filename,
 				"width" => $thumb_width,
 				"height" => $thumb_height,
 				"site_name" => $possible_site_name
-			);
+			];
 			if ($possible_url) {
 				$json_entry['url'] = $possible_url;
 			}
-
 
 			$data['items'][] = $json_entry;
 		}
 	}
 
 	// Write the output to a "thumbset.generated-<timestamp>.json" file
-	$output = get_indented_json_string(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_SLASHES));
+	$output = Json::encode($data);
 	$out_filepath = "$path/$set_name/thumbset.generated-".time().".json";
 	file_put_contents($out_filepath, $output);
 
@@ -119,36 +121,47 @@ if (!isset($_POST['thumbset'])) {
 
 
 
-?>
-<form action="generate_thumbset_json.php" method="POST" enctype="application/x-www-form-urlencoded">
+?><!doctype html>
+<html>
+<head>
+	<title>Tagmarks Thumbset Generator</title>
+	<style type="text/css">
+		body {
+			font-family: sans-serif;
+			font-size: 16px;
+		}
+		form {
+			margin: 50px;
+			border: 1px solid #ccc;
+			padding: 20px;
+		}
+		.warning {
+			padding: 30px 100px;
+			background: #ffffaa;
+		}
+	</style>
+</head>
+<body>
+
+
+<form action="/thumbsets/thumbset_generator.php"
+      method="POST"
+      enctype="application/x-www-form-urlencoded">
 
 	<label for="thumbset">Name of thumbset to generate for?</label>
-	<select name="thumbset">
+
+	<select id="thumbset" name="thumbset">
 		<option value="" selected="selected">- Select a thumbset -</option>
 		<?= $thumbset_select_options_html ?>
 	</select>
 
 	<input type="hidden" name="path" value="<?= PATH_TO_THUMBSETS ?>" />
 
-	<button type="submit">Create starter <b>about.json</b></button>
-
+	<button type="submit">
+		Create starter <b>about.json</b>
+	</button>
 </form>
 
-<style type="text/css">
-	body {
-		font-family: sans-serif;
-		font-size: 16px;
-	}
-	form {
-		margin: 50px;
-		border: 1px solid #ccc;
-		padding: 20px;
-	}
-	.warning {
-		padding: 30px 100px;
-		background: #ffffaa;
-	}
-</style>
 <div class="warning">
 	<p>
 		NOTE: The generator makes many assumptions when it writes the
@@ -160,3 +173,7 @@ if (!isset($_POST['thumbset'])) {
 		and check for any false assumptions or glitches in the result.
 	</p>
 </div>
+
+
+</body>
+</html>
